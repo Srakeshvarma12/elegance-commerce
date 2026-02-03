@@ -183,3 +183,18 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 FRONTEND_RESET_PASSWORD_URL = "http://localhost:5173/reset-password"
+
+# ----- FORCE TRACEBACK LOGGING IN PRODUCTION-LIKE ENV -----
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",
+    },
+}
