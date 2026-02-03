@@ -9,7 +9,7 @@ from datetime import timedelta
 import dj_database_url
 
 # BASE DIR  (MUST COME FIRST)
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
 load_dotenv(BASE_DIR / ".env")
