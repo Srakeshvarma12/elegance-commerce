@@ -17,7 +17,7 @@ load_dotenv(BASE_DIR / ".env")
 # SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # DJANGO REST + JWT (FIXED — MANDATORY)
 REST_FRAMEWORK = {
