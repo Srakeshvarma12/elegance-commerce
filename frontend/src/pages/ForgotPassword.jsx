@@ -74,7 +74,7 @@ export default function ForgotPassword() {
             </form>
           </>
         ) : (
-          // ✅ SUCCESS ANIMATION
+
           <div className="animate-fade-in">
             <div className="text-green-600 text-6xl mb-6">
               ✓

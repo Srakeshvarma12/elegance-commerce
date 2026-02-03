@@ -21,17 +21,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer
 
 
-# =========================
 # REGISTER
-# =========================
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
 
-# =========================
 # LOGIN (ADMIN + USER)
-# =========================
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
@@ -62,9 +58,7 @@ class LoginView(APIView):
         })
 
 
-# =========================
 # PROFILE (AUTH REQUIRED)
-# =========================
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -77,9 +71,7 @@ class ProfileView(APIView):
         })
 
 
-# =========================
 # PASSWORD RESET (SEND LINK)
-# =========================
 class PasswordResetAPIView(APIView):
     def post(self, request):
         email = request.data.get("email")
@@ -119,9 +111,7 @@ class PasswordResetAPIView(APIView):
         )
 
 
-# =========================
 # PASSWORD RESET CONFIRM (JSON ONLY)
-# =========================
 class PasswordResetConfirmAPIView(APIView):
     def post(self, request, uidb64, token):
         password = request.data.get("password")

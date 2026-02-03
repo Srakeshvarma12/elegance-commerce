@@ -16,8 +16,7 @@ export default function Shop() {
   useEffect(() => {
     setLoading(true);
 
-    let url = "http://127.0.0.1:8000/api/products/?";
-
+    let url = "http:
     if (search) url += `search=${encodeURIComponent(search)}&`;
     if (category && category !== "all")
       url += `category=${encodeURIComponent(category)}&`;
@@ -43,7 +42,7 @@ export default function Shop() {
         </p>
       )}
 
-      {/* ✅ KEY CHANGE FOR MOBILE = TWO COLUMNS */}
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product) => (
           <Link

@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children }) {
       .catch(() => setIsValid(false));
   }, [token]);
 
-  // ⛔ LOADING SKELETON (nice UX)
+  // LOADING SKELETON (nice UX)
   if (isValid === null) {
     return <PageSkeleton />;
   }

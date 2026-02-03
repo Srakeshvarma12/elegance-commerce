@@ -29,12 +29,12 @@ export default function Login() {
       return;
     }
 
-    // ✅ Correct storage — nothing else
+
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
     localStorage.setItem("username", data.username);
 
-    // ✅ Single source of truth redirect
+
     navigate("/", { replace: true });
 
   } catch {

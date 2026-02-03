@@ -7,8 +7,6 @@ export default function MainLayout() {
     <>
       <Navbar />
       <Toast />
-
-      {/* 👉 THIS WRAPPER FIXES THE NAVBAR OVERLAP GLOBALLY */}
       <main className="min-h-screen bg-white pt-20">
         <Outlet />
       </main>

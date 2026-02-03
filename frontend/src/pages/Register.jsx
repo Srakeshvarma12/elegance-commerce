@@ -35,7 +35,7 @@ export default function Register() {
       return;
     }
 
-    // ✅ After successful register → go to login
+
     navigate("/login");
   };
 
@@ -82,7 +82,7 @@ export default function Register() {
           {loading ? "Signing up..." : "Sign Up"}
         </button>
 
-        {/* ✅ REAL WEBSITE STYLE */}
+
         <p className="text-sm text-center mt-6">
           Already have an account?{" "}
           <Link to="/login" className="underline">

@@ -5,11 +5,9 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("access");   // ✅ CORRECT KEY
+  const token = localStorage.getItem("access");
 
-  // ===============================
   // UPDATE ORDER STATUS (ADMIN)
-  // ===============================
   const updateStatus = async (orderId, status) => {
     try {
       const res = await fetch(
@@ -18,7 +16,7 @@ export default function AdminOrders() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,   // ✅ FIXED
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status }),
         }
@@ -29,7 +27,7 @@ export default function AdminOrders() {
         return;
       }
 
-      // ✅ Update UI instantly (no refetch)
+
       setOrders(prev =>
         prev.map(order =>
           order.id === orderId
@@ -43,13 +41,11 @@ export default function AdminOrders() {
     }
   };
 
-  // ===============================
   // FETCH ALL ORDERS (ADMIN ONLY)
-  // ===============================
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/orders/admin/orders/", {
       headers: {
-        Authorization: `Bearer ${token}`,   // ✅ FIXED
+        Authorization: `Bearer ${token}`,
       },
     })
       .then(res => {

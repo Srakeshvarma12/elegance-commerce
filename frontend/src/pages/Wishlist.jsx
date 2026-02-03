@@ -25,9 +25,7 @@ export default function Wishlist() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ============================
   // FETCH WISHLIST
-  // ============================
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -56,9 +54,7 @@ export default function Wishlist() {
       });
   }, [token, navigate, setWishlist]);
 
-  // ============================
   // REMOVE FROM WISHLIST
-  // ============================
   const removeFromWishlist = async (productId) => {
     try {
       await fetch(
@@ -78,9 +74,7 @@ export default function Wishlist() {
     }
   };
 
-  // ============================
   // ADD TO CART (AND REMOVE FROM WISHLIST)
-  // ============================
   const handleAddToCart = async (item) => {
     addToCart({
       id: item.product,
@@ -108,9 +102,7 @@ export default function Wishlist() {
     }
   };
 
-  // ============================
   // UI STATES
-  // ============================
   if (loading) {
     return (
       <div className="p-32 text-center">

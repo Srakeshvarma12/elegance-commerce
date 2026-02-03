@@ -10,9 +10,7 @@ from .serializers import OrderSerializer
 from products.models import Product
 
 
-# =====================================================
 # USER: LIST + CREATE OWN ORDERS
-# =====================================================
 class OrderListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
@@ -56,9 +54,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# =====================================================
 # USER: ORDER DETAIL (OWN ORDER ONLY)
-# =====================================================
 class OrderDetailView(generics.RetrieveAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -74,9 +70,7 @@ class OrderDetailView(generics.RetrieveAPIView):
         return order
 
 
-# =====================================================
 # USER: UPDATE ORDER AFTER PAYMENT
-# =====================================================
 class UpdateOrderAfterPayment(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -102,9 +96,7 @@ class UpdateOrderAfterPayment(APIView):
         )
 
 
-# =====================================================
 # ADMIN: LIST ALL ORDERS
-# =====================================================
 class AdminOrderListView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -114,9 +106,7 @@ class AdminOrderListView(APIView):
         return Response(serializer.data)
 
 
-# =====================================================
 # ADMIN: UPDATE ORDER STATUS
-# =====================================================
 class AdminOrderUpdateView(APIView):
     permission_classes = [IsAdminUser]
 

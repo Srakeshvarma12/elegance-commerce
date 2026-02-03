@@ -10,21 +10,15 @@ load_dotenv(BASE_DIR / ".env")
 from pathlib import Path
 from datetime import timedelta
 
-# --------------------------------------------------
 # BASE DIR
-# --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --------------------------------------------------
 # SECURITY
-# --------------------------------------------------
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 ALLOWED_HOSTS = []
 
-# --------------------------------------------------
 # DJANGO REST + JWT (FIXED — MANDATORY)
-# --------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -39,9 +33,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# --------------------------------------------------
 # INSTALLED APPS
-# --------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -66,9 +58,7 @@ INSTALLED_APPS = [
     "dashboard",
 ]
 
-# --------------------------------------------------
 # MIDDLEWARE (ORDER MATTERS)
-# --------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -81,9 +71,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# --------------------------------------------------
 # URLS / WSGI
-# --------------------------------------------------
 ROOT_URLCONF = "server.urls"
 
 TEMPLATES = [
@@ -103,9 +91,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "server.wsgi.application"
 
-# --------------------------------------------------
 # DATABASE
-# --------------------------------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -119,9 +105,7 @@ DATABASES = {
 
 
 
-# --------------------------------------------------
 # PASSWORD VALIDATION
-# --------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -129,50 +113,36 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# --------------------------------------------------
 # INTERNATIONALIZATION
-# --------------------------------------------------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# --------------------------------------------------
 # STATIC & MEDIA
-# --------------------------------------------------
 STATIC_URL = "static/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# --------------------------------------------------
 # CORS
-# --------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = True
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 SECURE_CROSS_ORIGIN_EMBEDDER_POLICY = None
 
-# --------------------------------------------------
 # PAYMENTS
-# --------------------------------------------------
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
 
-# --------------------------------------------------
 # DEFAULT PRIMARY KEY
-# --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --------------------------------------------------
 # EMAIL (PASSWORD RESET)
-# --------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "noreply@elegance.com"
 
-# --------------------------------------------------
 # CSRF TRUSTED ORIGINS (REQUIRED FOR REACT)
-# --------------------------------------------------
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]

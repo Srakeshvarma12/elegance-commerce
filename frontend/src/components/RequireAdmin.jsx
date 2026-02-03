@@ -23,7 +23,7 @@ export default function RequireAdmin({ children }) {
       .catch(() => setIsAdmin(false));
   }, [token]);
 
-  // ⛔ LOADING SKELETON
+  // LOADING SKELETON
   if (isAdmin === null) {
     return <PageSkeleton />;
   }

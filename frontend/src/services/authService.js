@@ -39,7 +39,7 @@ export const loginUser = async (userData) => {
     throw new Error(data.error || "Login failed");
   }
 
-  // ✅ STORE AUTH DATA
+
   localStorage.setItem("token", data.access);
 
   // Always store boolean as string

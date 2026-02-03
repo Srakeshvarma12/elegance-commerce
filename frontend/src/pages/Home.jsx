@@ -5,8 +5,7 @@ export default function Home() {
     <div className="w-full">
       <section className="relative h-screen w-full overflow-hidden">
         <img
-          src="https://plus.unsplash.com/premium_photo-1681488262364-8aeb1b6aac56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWNvbW1lcmNlfGVufDB8fDB8fHww?auto=format&fit=crop&w=5400&q=100"
-          alt="Hero"
+          src="https:          alt="Hero"
           className="absolute inset-0 w-full h-full object-cover"
         />
 
