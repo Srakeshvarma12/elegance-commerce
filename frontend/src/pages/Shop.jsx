@@ -16,9 +16,11 @@ export default function Shop() {
   useEffect(() => {
     setLoading(true);
 
-    let url = "http:
-    if (search) url += `search=${encodeURIComponent(search)}&`;
-    if (category && category !== "all")
+let url = "https://elegance-commerce.onrender.com/api/products/?";
+
+if (search) url += `search=${encodeURIComponent(search)}&`;
+if (category && category !== "all") url += `category=${category}`;
+
       url += `category=${encodeURIComponent(category)}&`;
 
     fetch(url)
