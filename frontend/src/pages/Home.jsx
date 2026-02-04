@@ -5,9 +5,11 @@ export default function Home() {
     <div className="w-full">
       <section className="relative h-screen w-full overflow-hidden">
         <img
-          src="https:          alt="Hero"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000"
+  alt="Hero"
+  className="absolute inset-0 w-full h-full object-cover"
+/>
+
 
         <div className="absolute inset-0 bg-black/40"></div>
 
