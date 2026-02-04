@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function Register() {
   const navigate = useNavigate();
@@ -15,28 +16,21 @@ export default function Register() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("http://127.0.0.1:8000/api/auth/register/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      await api.post("/auth/register/", {
         username,
         email,
         password,
-      }),
-    });
+      });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || "Registration failed");
+      navigate("/login");
+    } catch (err) {
+      setError(
+        err.response?.data?.error || "Registration failed"
+      );
+    } finally {
       setLoading(false);
-      return;
     }
-
-
-    navigate("/login");
   };
 
   return (
@@ -81,7 +75,6 @@ export default function Register() {
         >
           {loading ? "Signing up..." : "Sign Up"}
         </button>
-
 
         <p className="text-sm text-center mt-6">
           Already have an account?{" "}

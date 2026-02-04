@@ -1,5 +1,6 @@
 import { useCartStore } from "../store/cartStore";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api"; 
 
 export default function Checkout() {
   const cart = useCartStore(state => state.cart);
@@ -28,31 +29,16 @@ export default function Checkout() {
     let orderId;
 
     try {
-      const orderRes = await fetch("http://127.0.0.1:8000/api/orders/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          total_amount: total,
-          items: cart.map(item => ({
-            product_id: item.id,
-            price: item.price,
-            quantity: item.quantity,
-          })),
-        }),
+      const orderRes = await api.post("/orders/", {
+        total_amount: total,
+        items: cart.map(item => ({
+          product_id: item.id,
+          price: item.price,
+          quantity: item.quantity,
+        })),
       });
 
-      const orderData = await orderRes.json();
-
-      if (!orderRes.ok) {
-        console.error(orderData);
-        alert("Failed to create order.");
-        return;
-      }
-
-      orderId = orderData.id;
+      orderId = orderRes.data.id;
     } catch (err) {
       console.error(err);
       alert("Server error while creating order.");
@@ -68,24 +54,9 @@ export default function Checkout() {
 
       handler: async response => {
         try {
-          const updateRes = await fetch(
-            `http://127.0.0.1:8000/api/orders/${orderId}/update/`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                payment_id: response.razorpay_payment_id,
-              }),
-            }
-          );
-
-          if (!updateRes.ok) {
-            alert("Payment succeeded, but order update failed.");
-            return;
-          }
+          await api.put(`/orders/${orderId}/update/`, {
+            payment_id: response.razorpay_payment_id,
+          });
 
           clearCart();
           navigate("/account");
@@ -109,10 +80,9 @@ export default function Checkout() {
           Checkout
         </h1>
 
-        {/* RESPONSIVE GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
 
-          {/* LEFT — CART ITEMS */}
+          {/* CART ITEMS */}
           <div>
             {cart.length === 0 ? (
               <p className="text-gray-500">Your cart is empty.</p>
@@ -135,7 +105,7 @@ export default function Checkout() {
             )}
           </div>
 
-          {/* RIGHT — ORDER SUMMARY */}
+          {/* ORDER SUMMARY */}
           <div className="border border-black p-6 md:p-10 h-fit">
             <h2 className="uppercase tracking-widest text-sm md:text-lg">
               Order Summary

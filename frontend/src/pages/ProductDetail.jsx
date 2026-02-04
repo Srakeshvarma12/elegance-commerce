@@ -3,6 +3,7 @@ import { useCartStore } from "../store/cartStore";
 import { useToastStore } from "../store/toastStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useEffect, useState } from "react";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -33,36 +34,36 @@ export default function ProductDetail() {
 
   const token = localStorage.getItem("access");
 
+  // FETCH PRODUCT
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/products/${id}/`)
-      .then(res => res.json())
-      .then(data => {
-        setProduct(data);
-        setVariants(data.variants || []);
+    api.get(`/products/${id}/`)
+      .then(res => {
+        setProduct(res.data);
+        setVariants(res.data.variants || []);
       })
       .catch(() => setProduct(null));
   }, [id]);
 
+  // FETCH REVIEWS
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/reviews/product/${id}/`)
-      .then(res => res.json())
-      .then(setReviews)
+    api.get(`/reviews/product/${id}/`)
+      .then(res => setReviews(res.data))
       .catch(() => setReviews([]));
   }, [id]);
 
+  // CHECK WISHLIST STATUS
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://127.0.0.1:8000/api/wishlist/my/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async res => (res.ok ? await res.json() : []))
-      .then(data => {
-        const exists = data.some(item => item.product === Number(id));
+    api.get("/wishlist/my/")
+      .then(res => {
+        const exists = res.data.some(item => item.product === Number(id));
         setIsWishlisted(exists);
-      });
+      })
+      .catch(() => setIsWishlisted(false));
   }, [id, token]);
 
+  // TOGGLE WISHLIST
   const toggleWishlist = async () => {
     if (!token) {
       navigate("/login");
@@ -73,23 +74,7 @@ export default function ProductDetail() {
     setWishlistLoading(true);
 
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/api/wishlist/toggle/${product.id}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.status === 401) {
-        navigate("/login");
-        return;
-      }
-
-      if (!res.ok) return;
+      await api.post(`/wishlist/toggle/${product.id}/`);
 
       if (isWishlisted) {
         removeItem(product.id);
@@ -100,6 +85,8 @@ export default function ProductDetail() {
       }
 
       setIsWishlisted(prev => !prev);
+    } catch (err) {
+      if (err.response?.status === 401) navigate("/login");
     } finally {
       setWishlistLoading(false);
     }
@@ -146,31 +133,20 @@ export default function ProductDetail() {
     }
 
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/api/reviews/product/${id}/add/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ rating, comment }),
-        }
-      );
+      const res = await api.post(`/reviews/product/${id}/add/`, {
+        rating,
+        comment,
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setReviewError(data.error || "You already reviewed this product.");
-        return;
-      }
-
-      setReviews(prev => [data, ...prev]);
+      setReviews(prev => [res.data, ...prev]);
       setRating(0);
       setComment("");
       setReviewError("");
-    } catch {
-      setReviewError("Unable to submit review. Try again.");
+    } catch (err) {
+      setReviewError(
+        err.response?.data?.error ||
+        "You already reviewed this product."
+      );
     }
   };
 
@@ -316,7 +292,7 @@ export default function ProductDetail() {
           Customer Reviews
         </h2>
 
-        {/* ADD REVIEW BOX */}
+        {/* ADD REVIEW */}
         <div className="border p-4 md:p-6 mb-10 max-w-xl">
 
           <p className="mb-2 uppercase text-xs md:text-sm">Your Rating</p>

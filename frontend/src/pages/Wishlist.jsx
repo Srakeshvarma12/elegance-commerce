@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useToastStore } from "../store/toastStore";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function Wishlist() {
   const navigate = useNavigate();
 
-  // 🔐 AUTH
   const token = localStorage.getItem("access");
 
   // 🛒 CART
   const addToCart = useCartStore(state => state.addToCart);
 
-  // ❤️ WISHLIST (GLOBAL STORE)
+  // ❤️ WISHLIST STORE
   const items = useWishlistStore(state => state.items);
   const setWishlist = useWishlistStore(state => state.setWishlist);
   const removeItem = useWishlistStore(state => state.removeItem);
@@ -32,24 +32,17 @@ export default function Wishlist() {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/api/wishlist/my/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    api.get("/wishlist/my/")
       .then(res => {
-        if (res.status === 401) {
-          navigate("/login");
-          return [];
-        }
-        return res.json();
-      })
-      .then(data => {
-        setWishlist(Array.isArray(data) ? data : []);
+        setWishlist(Array.isArray(res.data) ? res.data : []);
         setLoading(false);
       })
-      .catch(() => {
-        setError("Unable to load wishlist");
+      .catch(err => {
+        if (err.response?.status === 401) {
+          navigate("/login");
+        } else {
+          setError("Unable to load wishlist");
+        }
         setLoading(false);
       });
   }, [token, navigate, setWishlist]);
@@ -57,15 +50,7 @@ export default function Wishlist() {
   // REMOVE FROM WISHLIST
   const removeFromWishlist = async (productId) => {
     try {
-      await fetch(
-        `http://127.0.0.1:8000/api/wishlist/toggle/${productId}/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post(`/wishlist/toggle/${productId}/`);
 
       removeItem(productId);
       showToast("Removed from wishlist");
@@ -74,7 +59,7 @@ export default function Wishlist() {
     }
   };
 
-  // ADD TO CART (AND REMOVE FROM WISHLIST)
+  // ADD TO CART AND REMOVE FROM WISHLIST
   const handleAddToCart = async (item) => {
     addToCart({
       id: item.product,
@@ -85,15 +70,7 @@ export default function Wishlist() {
     });
 
     try {
-      await fetch(
-        `http://127.0.0.1:8000/api/wishlist/toggle/${item.product}/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post(`/wishlist/toggle/${item.product}/`);
 
       removeItem(item.product);
       showToast("Added to cart");

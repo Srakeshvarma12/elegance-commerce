@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export default function Account() {
   const [orders, setOrders] = useState([]);
@@ -13,21 +14,16 @@ export default function Account() {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/api/orders/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => setOrders(data))
+    api.get("/orders/")
+      .then(res => setOrders(res.data))
       .catch(() => navigate("/login"));
-  }, []);
+  }, [token, navigate]);
 
   function logout() {
-  localStorage.removeItem("access");
-  localStorage.removeItem("refresh");
-  window.location.href = "/login";
-}
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    window.location.href = "/login";
+  }
 
   return (
     <div style={{ padding: "60px", maxWidth: "900px", margin: "auto" }}>

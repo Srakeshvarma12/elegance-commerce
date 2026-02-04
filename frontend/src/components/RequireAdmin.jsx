@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import PageSkeleton from "./PageSkeleton";
+import api from "../services/api";
 
 export default function RequireAdmin({ children }) {
   const [isAdmin, setIsAdmin] = useState(null);
@@ -12,14 +13,8 @@ export default function RequireAdmin({ children }) {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/api/auth/profile/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async res => {
-        if (!res.ok) return { is_admin: false };
-        return await res.json();
-      })
-      .then(data => setIsAdmin(!!data.is_admin))
+    api.get("/auth/profile/")
+      .then(res => setIsAdmin(!!res.data.is_admin))
       .catch(() => setIsAdmin(false));
   }, [token]);
 

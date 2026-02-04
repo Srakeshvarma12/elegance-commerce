@@ -1,4 +1,6 @@
+import api from "./api";
+
 export async function fetchProducts() {
-  const res = await fetch("http://127.0.0.1:8000/api/products/")
-  return await res.json()
+  const res = await api.get("/products/");
+  return res.data;
 }

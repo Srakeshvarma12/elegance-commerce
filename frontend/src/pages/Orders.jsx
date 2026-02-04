@@ -1,34 +1,31 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function Orders() {
-  const [orders, setOrders] = useState([])
-  const navigate = useNavigate()
+  const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("access")
+    const token = localStorage.getItem("access");
+
     if (!token) {
-      navigate("/login")
-      return
+      navigate("/login");
+      return;
     }
 
-    fetch("http://127.0.0.1:8000/api/orders/", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    api.get("/orders/")
       .then(res => {
-        if (res.status === 401) {
-          localStorage.removeItem("access")
-          navigate("/login")
-          return null
+        setOrders(res.data);
+      })
+      .catch(err => {
+        // If unauthorized, clear token and redirect
+        if (err.response?.status === 401) {
+          localStorage.removeItem("access");
+          navigate("/login");
         }
-        return res.json()
-      })
-      .then(data => {
-        if (data) setOrders(data)
-      })
-  }, [navigate])
+      });
+  }, [navigate]);
 
   return (
     <div className="min-h-screen p-10">
@@ -44,5 +41,5 @@ export default function Orders() {
         </div>
       ))}
     </div>
-  )
+  );
 }

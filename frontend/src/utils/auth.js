@@ -1,20 +1,19 @@
+import api from "./api";   // ✅ centralized client
+
 export const refreshAccessToken = async () => {
   const refresh = localStorage.getItem("refresh");
 
   if (!refresh) return null;
 
-  const res = await fetch("http://127.0.0.1:8000/api/auth/refresh/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh }),
-  });
+  try {
+    const res = await api.post("/auth/refresh/", { refresh });
 
-  if (!res.ok) {
+    const newAccess = res.data.access;
+    localStorage.setItem("access", newAccess);   // keep consistent
+
+    return newAccess;
+  } catch {
     localStorage.clear();
     return null;
   }
-
-  const data = await res.json();
-  localStorage.setItem("token", data.access);
-  return data.access;
 };

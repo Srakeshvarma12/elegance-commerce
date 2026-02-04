@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useState, useEffect, useRef } from "react";
+import api from "../services/api";
+
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -26,21 +28,17 @@ export default function Navbar() {
   const searchRef = useRef(null);
 
   // VERIFY ADMIN WITH BACKEND
-  useEffect(() => {
-    if (!token) {
-      setIsAdmin(false);
-      return;
-    }
+useEffect(() => {
+  if (!token) {
+    setIsAdmin(false);
+    return;
+  }
 
-    fetch("http://127.0.0.1:8000/api/auth/profile/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => setIsAdmin(!!data.is_admin))
-      .catch(() => setIsAdmin(false));
-  }, [token]);
+  api.get("/auth/profile/")
+    .then(res => setIsAdmin(!!res.data.is_admin))
+    .catch(() => setIsAdmin(false));
+}, [token]);
+
 
   // Close profile when clicking outside
   useEffect(() => {

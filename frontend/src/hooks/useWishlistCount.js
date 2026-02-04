@@ -1,29 +1,32 @@
 import { useEffect, useState } from "react";
+import api from "../services/api";
 
 export default function useWishlistCount() {
   const [count, setCount] = useState(0);
   const token = localStorage.getItem("access");
 
   useEffect(() => {
-  const refresh = () => {
-    if (!token) return setCount(0);
+    const refresh = async () => {
+      if (!token) {
+        setCount(0);
+        return;
+      }
 
-    fetch("http://127.0.0.1:8000/api/wishlist/my/", {
-      headers: { Authorization: "Bearer " + token },
-    })
-      .then(res => res.json())
-      .then(data => setCount(data.length))
-      .catch(() => setCount(0));
-  };
+      try {
+        const res = await api.get("/wishlist/my/");
+        setCount(Array.isArray(res.data) ? res.data.length : 0);
+      } catch {
+        setCount(0);
+      }
+    };
 
-  refresh();
-  window.addEventListener("wishlist-updated", refresh);
+    refresh();
+    window.addEventListener("wishlist-updated", refresh);
 
-  return () => {
-    window.removeEventListener("wishlist-updated", refresh);
-  };
-}, [token]);
-
+    return () => {
+      window.removeEventListener("wishlist-updated", refresh);
+    };
+  }, [token]);
 
   return count;
 }

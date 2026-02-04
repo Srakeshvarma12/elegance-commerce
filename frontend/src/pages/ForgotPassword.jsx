@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -12,21 +13,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/api/auth/password-reset/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error("Request failed");
-      }
-
+      await api.post("/auth/password-reset/", { email });
       setSuccess(true);
     } catch {
       setError("Something went wrong. Try again.");

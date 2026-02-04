@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -11,38 +12,32 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    const res = await fetch("http://127.0.0.1:8000/api/auth/login/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await api.post("/auth/login/", {
+        username,
+        password,
+      });
 
-    const data = await res.json();
+      const data = res.data;
 
-    if (!res.ok) {
-      setError(data.error || "Invalid username or password");
-      return;
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+      localStorage.setItem("username", data.username);
+
+      navigate("/", { replace: true });
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+        "Invalid username or password"
+      );
+    } finally {
+      setLoading(false);
     }
-
-
-    localStorage.setItem("access", data.access);
-    localStorage.setItem("refresh", data.refresh);
-    localStorage.setItem("username", data.username);
-
-
-    navigate("/", { replace: true });
-
-  } catch {
-    setError("Server not reachable. Try again later.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-6">

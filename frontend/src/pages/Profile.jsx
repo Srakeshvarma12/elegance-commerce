@@ -1,36 +1,32 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function Profile() {
-  const [user, setUser] = useState(null)
-  const navigate = useNavigate()
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("access")
+    const token = localStorage.getItem("access");
+
     if (!token) {
-      navigate("/login")
-      return
+      navigate("/login");
+      return;
     }
 
-    fetch("http://127.0.0.1:8000/api/auth/profile/", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    api.get("/auth/profile/")
       .then(res => {
-        if (res.status === 401) {
-          localStorage.removeItem("access")
-          navigate("/login")
-          return null
+        setUser(res.data);
+      })
+      .catch(err => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("access");
+          navigate("/login");
         }
-        return res.json()
-      })
-      .then(data => {
-        if (data) setUser(data)
-      })
-  }, [navigate])
+      });
+  }, [navigate]);
 
-  if (!user) return <div className="p-10">Loading...</div>
+  if (!user) return <div className="p-10">Loading...</div>;
 
   return (
     <div className="min-h-screen p-10">
@@ -40,5 +36,5 @@ export default function Profile() {
         <p><b>Email:</b> {user.email}</p>
       </div>
     </div>
-  )
+  );
 }

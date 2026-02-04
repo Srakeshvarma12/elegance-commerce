@@ -1,21 +1,17 @@
-const API = "http://127.0.0.1:8000/api/reviews/";
+import api from "./api";
 
 export const getReviews = async (productId) => {
-  const res = await fetch(`${API}${productId}/`);
-  return res.json();
+  const res = await api.get(`/reviews/${productId}/`);
+  return res.data;
 };
 
 export const addReview = async (productId, data) => {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API}${productId}/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(data)
-  });
-
-  return res.json();
+  try {
+    const res = await api.post(`/reviews/${productId}/`, data);
+    return res.data;
+  } catch (err) {
+    throw new Error(
+      err.response?.data?.error || "Failed to add review"
+    );
+  }
 };

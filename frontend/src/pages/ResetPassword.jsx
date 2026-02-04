@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function ResetPassword() {
   const { uid, token } = useParams();
@@ -13,24 +14,19 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
 
-    const res = await fetch(
-      `http://127.0.0.1:8000/api/auth/password-reset-confirm/${uid}/${token}/`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      }
-    );
+    try {
+      await api.post(
+        `/auth/password-reset-confirm/${uid}/${token}/`,
+        { password }
+      );
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || "Reset failed");
-      return;
+      setSuccess("Password reset successful");
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (err) {
+      setError(
+        err.response?.data?.error || "Reset failed"
+      );
     }
-
-    setSuccess("Password reset successful");
-    setTimeout(() => navigate("/login"), 1500);
   };
 
   return (

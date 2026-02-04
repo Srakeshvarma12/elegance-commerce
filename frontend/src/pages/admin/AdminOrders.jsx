@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../services/api";   // ✅ REQUIRED
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -10,23 +11,10 @@ export default function AdminOrders() {
   // UPDATE ORDER STATUS (ADMIN)
   const updateStatus = async (orderId, status) => {
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/api/orders/admin/orders/${orderId}/update/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status }),
-        }
+      await api.put(
+        `/orders/admin/orders/${orderId}/update/`,
+        { status }
       );
-
-      if (!res.ok) {
-        alert("Update failed");
-        return;
-      }
-
 
       setOrders(prev =>
         prev.map(order =>
@@ -43,22 +31,26 @@ export default function AdminOrders() {
 
   // FETCH ALL ORDERS (ADMIN ONLY)
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/orders/admin/orders/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    if (!token) {
+      setError("Not authorized");
+      setLoading(false);
+      return;
+    }
+
+    api.get("/orders/admin/orders/")
       .then(res => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then(data => {
-        setOrders(data);
+        setOrders(res.data);
         setLoading(false);
       })
       .catch(err => {
         console.error("Admin orders error:", err);
-        setError("Failed to load orders");
+
+        if (err.response?.status === 401) {
+          setError("Unauthorized — please log in as admin");
+        } else {
+          setError("Failed to load orders");
+        }
+
         setLoading(false);
       });
   }, [token]);
