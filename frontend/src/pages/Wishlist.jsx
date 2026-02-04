@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useToastStore } from "../store/toastStore";
-import api from "../services/api";   // ✅ REQUIRED
+import api from "../services/api"; 
 
 export default function Wishlist() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../services/api";   // ✅ REQUIRED
+import api from "../services/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

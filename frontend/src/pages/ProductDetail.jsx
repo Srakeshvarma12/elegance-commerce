@@ -3,7 +3,7 @@ import { useCartStore } from "../store/cartStore";
 import { useToastStore } from "../store/toastStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useEffect, useState } from "react";
-import api from "../services/api";   // ✅ REQUIRED
+import api from "../services/api";
 
 export default function ProductDetail() {
   const { id } = useParams();

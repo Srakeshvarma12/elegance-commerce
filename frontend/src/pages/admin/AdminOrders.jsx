@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";   // ✅ REQUIRED
+import api from "../services/api";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
