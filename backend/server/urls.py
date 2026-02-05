@@ -1,8 +1,9 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
+from django.views.static import serve
 
 # ---- HEALTH CHECK / ROOT ROUTE ----
 def home(request):
@@ -19,7 +20,7 @@ urlpatterns = [
     # ADMIN
     path("admin/", admin.site.urls),
 
-    # API ROUTES (YOUR EXISTING ONES — UNTOUCHED)
+    # API ROUTES
     path("api/products/", include("products.urls")),
     path("api/auth/", include("accounts.urls")),
     path("api/orders/", include("orders.urls")),
@@ -28,6 +29,22 @@ urlpatterns = [
     path("api/wishlist/", include("wishlist.urls")),
 ]
 
-# Serve media locally only
+# --------------------------------------------------
+# ✅ MEDIA SERVING (CRITICAL FIX)
+# --------------------------------------------------
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Local development
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
+else:
+    # ✅ REQUIRED FOR RENDER PRODUCTION
+    urlpatterns += [
+        re_path(
+            r"^media/(?P<path>.*)$",
+            serve,
+            {"document_root": settings.MEDIA_ROOT},
+        ),
+    ]
