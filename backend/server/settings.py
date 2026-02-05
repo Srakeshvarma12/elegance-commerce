@@ -14,18 +14,16 @@ from datetime import timedelta
 # --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env (local only)
+# Load environment variables from .env
 load_dotenv(BASE_DIR / ".env")
 
 # --------------------------------------------------
 # SECURITY
 # --------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key-change-me")
 
-# 🔹 PRODUCTION MODE ON RENDER
 DEBUG = False
 
-# 🔹 CORRECT ALLOWED HOSTS FOR RENDER
 ALLOWED_HOSTS = [
     "elegance-commerce.onrender.com",
     "localhost",
@@ -114,13 +112,13 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (Render PostgreSQL)
+# CORRECT DATABASE CONFIGURATION (RENDER POSTGRES)
 # --------------------------------------------------
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=True, 
     )
 }
 
@@ -184,7 +182,9 @@ CSRF_TRUSTED_ORIGINS = [
 
 FRONTEND_RESET_PASSWORD_URL = "http://localhost:5173/reset-password"
 
-# ----- FORCE TRACEBACK LOGGING IN PRODUCTION-LIKE ENV -----
+# --------------------------------------------------
+# ERROR LOGGING
+# --------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
