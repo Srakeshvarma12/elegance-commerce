@@ -54,7 +54,7 @@ export default function Cart() {
                     </h2>
 
                     <p className="mt-2 text-gray-600 text-sm md:text-base">
-                      ₹{item.price} × {item.quantity}
+                      ${item.price} × {item.quantity}
                     </p>
 
                     {/* QUANTITY CONTROLS */}

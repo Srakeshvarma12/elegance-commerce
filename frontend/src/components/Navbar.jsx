@@ -147,18 +147,6 @@ useEffect(() => {
           </Link>
 
           <button
-            onClick={() => navigate("/cart")}
-            className="relative text-lg md:text-base"
-          >
-            🛒
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </button>
-
-          <button
             onClick={() => navigate("/wishlist")}
             className="relative text-xl"
           >
@@ -166,6 +154,18 @@ useEffect(() => {
             {wishlistCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {wishlistCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => navigate("/cart")}
+            className="relative text-lg md:text-base"
+          >
+            🛒
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {cartCount}
               </span>
             )}
           </button>
@@ -248,8 +248,8 @@ useEffect(() => {
           >
             <option value="all">All</option>
             <option value="fashion">Fashion</option>
-            <option value="watches">Watches</option>
-            <option value="electronics">Electronics</option>
+            <option value="Watches">Watches</option>
+            <option value="Shoes">Shoes</option>
           </select>
 
           <button

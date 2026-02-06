@@ -10,7 +10,7 @@ import dj_database_url
 from datetime import timedelta
 
 # --------------------------------------------------
-# BASE DIRECTORY (MUST COME FIRST)
+# BASE DIRECTORY
 # --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -48,7 +48,7 @@ SIMPLE_JWT = {
 }
 
 # --------------------------------------------------
-# INSTALLED APPS
+# INSTALLED APPS  (UPDATED PER STEP 3)
 # --------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -73,8 +73,14 @@ INSTALLED_APPS = [
     "dashboard",
 ]
 
+# Step 3 instruction — ADD these at the bottom
+INSTALLED_APPS += [
+    "cloudinary",
+    "cloudinary_storage",
+]
+
 # --------------------------------------------------
-# MIDDLEWARE (ORDER MATTERS)
+# MIDDLEWARE
 # --------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -112,13 +118,13 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# CORRECT DATABASE CONFIGURATION (RENDER POSTGRES)
+# DATABASE (RENDER CLEAN VERSION — STEP 3)
 # --------------------------------------------------
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True, 
+        ssl_require=True,   # REQUIRED for Render
     )
 }
 
@@ -141,16 +147,21 @@ USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# STATIC & MEDIA (IMPORTANT FOR RENDER)
+# STATIC FILES (KEPT AS YOU SPECIFIED)
 # --------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# --------------------------------------------------
+# CLOUDINARY (STEP 3 — PRODUCTION MEDIA STORAGE)
+# --------------------------------------------------
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
+
+# NOTE: MEDIA_URL and MEDIA_ROOT are REMOVED as you instructed
 
 # --------------------------------------------------
-# CORS (ALLOW FRONTEND)
+# CORS
 # --------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = True
 
