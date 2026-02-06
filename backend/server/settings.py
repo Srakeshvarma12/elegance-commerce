@@ -207,12 +207,17 @@ LOGGING = {
     },
 }
 
-# -------- CLOUDINARY STORAGE --------
+# --------------------------------------------------
+# CLOUDINARY (CLEAN + RELIABLE CONFIG)
+# --------------------------------------------------
+
+# Use Cloudinary as the default storage backend
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-CLOUDINARY = {
-    "cloud_name": os.getenv("CLOUDINARY_URL").split("@")[1],
-    "api_key": os.getenv("CLOUDINARY_URL").split("//")[1].split(":")[0],
-    "api_secret": os.getenv("CLOUDINARY_URL").split(":")[2].split("@")[0],
+# Read Cloudinary credentials from environment variables
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
 }
 

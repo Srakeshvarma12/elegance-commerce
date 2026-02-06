@@ -6,7 +6,6 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         fields = ["id", "size", "color", "stock"]
 
-
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     variants = ProductVariantSerializer(many=True, read_only=True)
