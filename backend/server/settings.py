@@ -63,6 +63,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
 
+    "cloudinary",
+    "cloudinary_storage",
+
     # Your apps
     "accounts",
     "products",
@@ -71,12 +74,6 @@ INSTALLED_APPS = [
     "wishlist",
     "reviews",
     "dashboard",
-]
-
-# Step 3 instruction — ADD these at the bottom
-INSTALLED_APPS += [
-    "cloudinary",
-    "cloudinary_storage",
 ]
 
 # --------------------------------------------------
@@ -209,3 +206,13 @@ LOGGING = {
         "level": "ERROR",
     },
 }
+
+# -------- CLOUDINARY STORAGE --------
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+CLOUDINARY = {
+    "cloud_name": os.getenv("CLOUDINARY_URL").split("@")[1],
+    "api_key": os.getenv("CLOUDINARY_URL").split("//")[1].split(":")[0],
+    "api_secret": os.getenv("CLOUDINARY_URL").split(":")[2].split("@")[0],
+}
+
