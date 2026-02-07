@@ -17,6 +17,7 @@ export default function Login() {
     setLoading(true);
 
     try {
+      // 1) Login and get tokens
       const res = await api.post("/auth/login/", {
         username,
         password,
@@ -26,13 +27,25 @@ export default function Login() {
 
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
-      localStorage.setItem("username", data.username);
+      localStorage.setItem("username", username);
+
+      // 2) NOW fetch profile to know if user is admin
+      const profileRes = await api.get("/auth/me/", {
+        headers: {
+          Authorization: `Bearer ${data.access}`,
+        },
+      });
+
+      const user = profileRes.data;
+
+      // ✅ CRITICAL LINE FOR YOUR NAVBAR
+      localStorage.setItem("is_admin", user.is_staff ? "true" : "false");
 
       navigate("/", { replace: true });
     } catch (err) {
       setError(
         err.response?.data?.error ||
-        "Invalid username or password"
+          "Invalid username or password"
       );
     } finally {
       setLoading(false);
