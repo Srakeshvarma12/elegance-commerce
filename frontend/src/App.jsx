@@ -21,6 +21,7 @@ import RequireAdmin from "./components/RequireAdmin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminProducts from "./pages/admin/AdminProducts";
+import AdminAddProduct from "./pages/admin/AdminAddProduct";
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/products/new" element={<AdminAddProduct />} />
 
 
         {/* <Route path="/admin" element={<ProtectedRoute><RequireAdmin><AdminDashboard /></RequireAdmin></ProtectedRoute>} />
