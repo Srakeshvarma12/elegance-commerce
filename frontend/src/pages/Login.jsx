@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // 1) LOGIN FIRST
+      // 1️⃣ LOGIN FIRST (this is what really matters)
       const res = await api.post("/auth/login/", {
         username,
         password,
@@ -25,26 +25,38 @@ export default function Login() {
 
       const data = res.data;
 
+      // Store tokens (your app already relies on these)
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
       localStorage.setItem("username", username);
 
-      // 2) NOW GET PROFILE — ✅ CORRECT ENDPOINT
-      const profileRes = await api.get("/auth/profile/", {
-        headers: {
-          Authorization: `Bearer ${data.access}`,
-        },
-      });
+      // 2️⃣ TRY to get profile — BUT DON'T FAIL LOGIN IF IT 404s
+      try {
+        const profileRes = await api.get("/auth/profile/", {
+          headers: {
+            Authorization: `Bearer ${data.access}`,
+          },
+        });
 
-      const user = profileRes.data;
+        const user = profileRes.data;
 
-      // ✅ Store admin flag for Navbar
-      localStorage.setItem("is_admin", user.is_admin ? "true" : "false");
+        // If backend gives admin flag, store it
+        localStorage.setItem(
+          "is_admin",
+          user.is_admin ? "true" : "false"
+        );
+      } catch (profileError) {
+        console.warn(
+          "Profile endpoint missing or failed — defaulting is_admin to false"
+        );
+        localStorage.setItem("is_admin", "false");
+      }
 
+      // ✅ Always go to home on successful login
       navigate("/", { replace: true });
 
     } catch (err) {
-      console.error(err);
+      // This only runs if /auth/login/ itself fails
       setError("Invalid username or password");
     } finally {
       setLoading(false);
