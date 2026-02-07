@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // 1) Login and get tokens
+      // 1) LOGIN FIRST
       const res = await api.post("/auth/login/", {
         username,
         password,
@@ -29,8 +29,8 @@ export default function Login() {
       localStorage.setItem("refresh", data.refresh);
       localStorage.setItem("username", username);
 
-      // 2) NOW fetch profile to know if user is admin
-      const profileRes = await api.get("/auth/me/", {
+      // 2) NOW GET PROFILE — ✅ CORRECT ENDPOINT
+      const profileRes = await api.get("/auth/profile/", {
         headers: {
           Authorization: `Bearer ${data.access}`,
         },
@@ -38,15 +38,14 @@ export default function Login() {
 
       const user = profileRes.data;
 
-      // ✅ CRITICAL LINE FOR YOUR NAVBAR
-      localStorage.setItem("is_admin", user.is_staff ? "true" : "false");
+      // ✅ Store admin flag for Navbar
+      localStorage.setItem("is_admin", user.is_admin ? "true" : "false");
 
       navigate("/", { replace: true });
+
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Invalid username or password"
-      );
+      console.error(err);
+      setError("Invalid username or password");
     } finally {
       setLoading(false);
     }
@@ -95,25 +94,12 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="text-right">
-            <Link to="/forgot-password" className="text-sm underline">
-              Forgot password?
-            </Link>
-          </div>
-
           <button
             disabled={loading}
             className="border border-black py-3 mt-4 uppercase tracking-widest text-sm hover:bg-black hover:text-white transition disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
-            <Link to="/register" className="underline text-black">
-              Sign up
-            </Link>
-          </p>
 
         </form>
       </div>
