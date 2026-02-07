@@ -18,3 +18,20 @@
 button {
   cursor: pointer;
 }
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.animate-modalPop {
+  animation: modalPop 0.25s ease-out;
+}
