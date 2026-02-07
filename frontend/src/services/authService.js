@@ -1,6 +1,4 @@
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://elegance-commerce.onrender.com/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://elegance-commerce.onrender.com/api";
 
 export const login = async (email, password) => {
   const res = await fetch(`${API_URL}/auth/login/`, {
@@ -15,11 +13,10 @@ export const login = async (email, password) => {
     throw new Error(data.detail || "Login failed");
   }
 
-  // ✅ MATCH THE REST OF YOUR APP
-  localStorage.setItem("access", data.access);
-  localStorage.setItem("refresh", data.refresh);
+  // STORE TOKEN
+  localStorage.setItem("token", data.access);
 
-  // Get user profile
+  // STORE USER INFO (VERY IMPORTANT FOR ADMIN)
   const userRes = await fetch(`${API_URL}/auth/me/`, {
     headers: {
       Authorization: `Bearer ${data.access}`,
@@ -27,27 +24,22 @@ export const login = async (email, password) => {
   });
 
   const user = await userRes.json();
-
-  // Store what your Navbar & app actually use
-  localStorage.setItem("username", user.username || "Account");
-  localStorage.setItem("is_admin", user.is_staff ? "true" : "false");
+  localStorage.setItem("user", JSON.stringify(user));
 
   return user;
 };
 
 export const logout = () => {
-  localStorage.removeItem("access");
-  localStorage.removeItem("refresh");
-  localStorage.removeItem("username");
-  localStorage.removeItem("is_admin");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
 export const getAuthState = () => {
-  const token = localStorage.getItem("access");
-  const isAdmin = localStorage.getItem("is_admin") === "true";
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   return {
     isAuthenticated: !!token,
-    isAdmin,
+    isAdmin: user?.is_staff === true,
   };
 };
