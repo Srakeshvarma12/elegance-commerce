@@ -4,6 +4,7 @@ import { useToastStore } from "../store/toastStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import LoginToBuyModal from "../components/LoginToBuyModal";   // ✅ NEW IMPORT
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -31,6 +32,8 @@ export default function ProductDetail() {
 
   const [cartError, setCartError] = useState("");
   const [reviewError, setReviewError] = useState("");
+
+  const [showLoginModal, setShowLoginModal] = useState(false); // ✅ NEW STATE
 
   const token = localStorage.getItem("access");
 
@@ -261,15 +264,33 @@ export default function ProductDetail() {
           {/* ACTION BUTTONS */}
           <div className="flex flex-wrap gap-3 md:gap-4">
 
+            {/* UPDATED ADD TO CART */}
             <button
-              onClick={() => handleAddToCart(false)}
+              onClick={() => {
+                const token = localStorage.getItem("access");
+
+                if (!token) {
+                  setShowLoginModal(true);
+                } else {
+                  handleAddToCart(false);
+                }
+              }}
               className="border px-6 py-3 md:px-10 md:py-4 uppercase text-sm"
             >
               Add to Cart
             </button>
 
+            {/* UPDATED BUY NOW */}
             <button
-              onClick={() => handleAddToCart(true)}
+              onClick={() => {
+                const token = localStorage.getItem("access");
+
+                if (!token) {
+                  setShowLoginModal(true);
+                } else {
+                  handleAddToCart(true);
+                }
+              }}
               className="bg-black text-white px-6 py-3 md:px-10 md:py-4 uppercase text-sm"
             >
               Buy Now
@@ -358,6 +379,11 @@ export default function ProductDetail() {
           </div>
         )}
       </div>
+      <LoginToBuyModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+
     </div>
   );
 }
