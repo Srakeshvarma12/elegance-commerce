@@ -1,32 +1,19 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import PageSkeleton from "./PageSkeleton";
-import api from "../services/api";
 
 export default function RequireAdmin({ children }) {
-  const [isAdmin, setIsAdmin] = useState(null);
   const token = localStorage.getItem("access");
+  const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  useEffect(() => {
-    if (!token) {
-      setIsAdmin(false);
-      return;
-    }
-
-    api.get("/auth/profile/")
-      .then(res => setIsAdmin(!!res.data.is_admin))
-      .catch(() => setIsAdmin(false));
-  }, [token]);
-
-  // LOADING SKELETON
-  if (isAdmin === null) {
-    return <PageSkeleton />;
+  // Not logged in
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
-  // Not admin
+  // Logged in but not admin
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 
+  // Logged in + admin → allow access
   return children;
 }
