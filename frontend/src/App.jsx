@@ -46,16 +46,50 @@ export default function App() {
         <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
-        {/* ADMIN ROUTES */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/products" element={<AdminProducts />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
-        <Route path="/admin/products/new" element={<AdminAddProduct />} />
+        {/* ✅ ADMIN ROUTES — PROPERLY PROTECTED */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminDashboard />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/admin/products"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminProducts />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
 
-        {/* <Route path="/admin" element={<ProtectedRoute><RequireAdmin><AdminDashboard /></RequireAdmin></ProtectedRoute>} />
-        <Route path="/admin/orders" element={<ProtectedRoute><RequireAdmin><AdminOrders /></RequireAdmin></ProtectedRoute>} />
-        <Route path="/admin/products" element={<ProtectedRoute><RequireAdmin><AdminProducts /></RequireAdmin></ProtectedRoute>} /> */}
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminOrders />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/new"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminAddProduct />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
 
       </Route>
     </Routes>
