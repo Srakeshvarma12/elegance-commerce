@@ -2,8 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useState, useEffect, useRef } from "react";
-import api from "../services/api";
-import { getAuthState } from "../services/authService";   // ✅ NEW
+import { getAuthState } from "../services/authService";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -19,14 +18,10 @@ export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
-  // Profile dropdown
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
-
-  // Search ref
   const searchRef = useRef(null);
 
-  // ✅ STEP 6(b): USE AUTH SERVICE (NO BACKEND CALL)
   const { isAuthenticated, isAdmin } = getAuthState();
 
   // Close profile when clicking outside
@@ -61,6 +56,7 @@ export default function Navbar() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("username");
+    localStorage.removeItem("is_admin");
     setOpenMenu(false);
     setOpenProfile(false);
     navigate("/login");
@@ -159,9 +155,12 @@ export default function Navbar() {
             )}
           </button>
 
-          {/* ✅ STEP 6(b): ADMIN VISIBILITY FIX */}
+          {/* ADMIN — SHOW ONLY ON DESKTOP */}
           {isAuthenticated && isAdmin && (
-            <Link to="/admin" className="text-sm font-medium">
+            <Link
+              to="/admin"
+              className="hidden md:inline text-sm font-medium"
+            >
               ADMIN PANEL
             </Link>
           )}
@@ -282,9 +281,13 @@ export default function Navbar() {
                 ❤️ Wishlist ({wishlistCount})
               </button>
 
+              {/* ADMIN — MOBILE ONLY INSIDE HAMBURGER */}
               {isAuthenticated && isAdmin && (
-                <button onClick={() => { navigate("/admin"); setOpenMenu(false); }}>
-                  ADMIN
+                <button
+                  onClick={() => { navigate("/admin"); setOpenMenu(false); }}
+                  className="font-semibold"
+                >
+                  ADMIN PANEL
                 </button>
               )}
 
