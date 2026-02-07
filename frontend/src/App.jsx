@@ -20,6 +20,7 @@ import RequireAdmin from "./components/RequireAdmin";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminProducts from "./pages/admin/AdminProducts";
 
 export default function App() {
   return (
@@ -37,82 +38,22 @@ export default function App() {
         <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
 
         {/* USER PROTECTED ROUTES */}
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
+        {/* ADMIN ROUTES */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<AdminProducts />} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
 
-        <Route
-          path="/account"
-          element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          }
-        />
 
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/wishlist"
-          element={
-            <ProtectedRoute>
-              <Wishlist />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ADMIN ROUTES — CORRECT PATTERN */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminDashboard />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/orders"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminOrders />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
+        {/* <Route path="/admin" element={<ProtectedRoute><RequireAdmin><AdminDashboard /></RequireAdmin></ProtectedRoute>} />
+        <Route path="/admin/orders" element={<ProtectedRoute><RequireAdmin><AdminOrders /></RequireAdmin></ProtectedRoute>} />
+        <Route path="/admin/products" element={<ProtectedRoute><RequireAdmin><AdminProducts /></RequireAdmin></ProtectedRoute>} /> */}
 
       </Route>
     </Routes>

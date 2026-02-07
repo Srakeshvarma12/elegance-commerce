@@ -1,5 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny   # <-- IMPORTANT
+from rest_framework.permissions import IsAdminUser
+from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView
 from .models import Product
 from .serializers import ProductSerializer
 
@@ -32,3 +34,18 @@ class ProductDetailView(RetrieveAPIView):
 
     def get_serializer_context(self):
         return {"request": self.request}
+
+
+class ProductCreateView(CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAdminUser]
+
+class ProductUpdateView(UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAdminUser]
+
+class ProductDeleteView(DestroyAPIView):
+    queryset = Product.objects.all()
+    permission_classes = [IsAdminUser]

@@ -169,6 +169,14 @@ useEffect(() => {
               </span>
             )}
           </button>
+          
+          <button
+  onClick={() => navigate("/admin")}
+  className="bg-red-600 text-white px-4 py-2 rounded"
+>
+  Admin Panel
+</button>
+
 
           {/* PROFILE */}
           {token && (

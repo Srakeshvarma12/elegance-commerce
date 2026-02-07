@@ -1,57 +1,41 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
-    <div className="min-h-screen px-10 py-24">
-      <h1 className="text-3xl font-serif uppercase mb-10">
-        Admin Dashboard
-      </h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button
+          onClick={() => navigate("/admin/products")}
+          className="bg-blue-600 text-white p-4 rounded-lg"
+        >
+          Manage Products
+        </button>
 
-        {/* ORDERS */}
-        <div
+        <button
           onClick={() => navigate("/admin/orders")}
-          className="border p-6 cursor-pointer
-                     hover:bg-black hover:text-white
-                     transition"
+          className="bg-green-600 text-white p-4 rounded-lg"
         >
-          <h2 className="uppercase tracking-widest">
-            Orders
-          </h2>
-          <p className="mt-2">
-            Manage customer orders
-          </p>
-        </div>
+          Manage Orders
+        </button>
 
-        {/* PRODUCTS */}
-        <div
-          className="border p-6 opacity-50 cursor-not-allowed"
-          title="Coming soon"
+        <button
+          onClick={() => navigate("/admin/users")}
+          className="bg-purple-600 text-white p-4 rounded-lg"
         >
-          <h2 className="uppercase tracking-widest">
-            Products
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Add / Edit products
-          </p>
-        </div>
-
-        {/* USERS */}
-        <div
-          className="border p-6 opacity-50 cursor-not-allowed"
-          title="Coming soon"
-        >
-          <h2 className="uppercase tracking-widest">
-            Users
-          </h2>
-          <p className="mt-2 text-gray-600">
-            View customers
-          </p>
-        </div>
-
+          Manage Users
+        </button>
       </div>
     </div>
   );
