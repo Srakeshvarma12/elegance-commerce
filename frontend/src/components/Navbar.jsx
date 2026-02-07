@@ -3,7 +3,7 @@ import { useCartStore } from "../store/cartStore";
 import { useWishlistStore } from "../store/wishlistStore";
 import { useState, useEffect, useRef } from "react";
 import api from "../services/api";
-
+import { getAuthState } from "../services/authService";   // ✅ NEW
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -14,7 +14,6 @@ export default function Navbar() {
   const token = localStorage.getItem("access");
   const username = localStorage.getItem("username") || "Account";
 
-  const [isAdmin, setIsAdmin] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [showSearch, setShowSearch] = useState(false);
@@ -24,21 +23,11 @@ export default function Navbar() {
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
 
-  // 🔹 NEW: SEARCH REF (IMPORTANT)
+  // Search ref
   const searchRef = useRef(null);
 
-  // VERIFY ADMIN WITH BACKEND
-useEffect(() => {
-  if (!token) {
-    setIsAdmin(false);
-    return;
-  }
-
-  api.get("/auth/profile/")
-    .then(res => setIsAdmin(!!res.data.is_admin))
-    .catch(() => setIsAdmin(false));
-}, [token]);
-
+  // ✅ STEP 6(b): USE AUTH SERVICE (NO BACKEND CALL)
+  const { isAuthenticated, isAdmin } = getAuthState();
 
   // Close profile when clicking outside
   useEffect(() => {
@@ -52,7 +41,7 @@ useEffect(() => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 🔹 CLOSE SEARCH WHEN CLICKING ANYWHERE OUTSIDE
+  // Close search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -169,14 +158,13 @@ useEffect(() => {
               </span>
             )}
           </button>
-          
-          <button
-  onClick={() => navigate("/admin")}
-  className="bg-red-600 text-white px-4 py-2 rounded"
->
-  Admin Panel
-</button>
 
+          {/* ✅ STEP 6(b): ADMIN VISIBILITY FIX */}
+          {isAuthenticated && isAdmin && (
+            <Link to="/admin" className="text-sm font-medium">
+              ADMIN PANEL
+            </Link>
+          )}
 
           {/* PROFILE */}
           {token && (
@@ -235,7 +223,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* 🔹 MOBILE SEARCH PANEL (WRAPPED WITH REF) */}
+      {/* MOBILE SEARCH PANEL */}
       {showSearch && (
         <div
           ref={searchRef}
@@ -256,8 +244,8 @@ useEffect(() => {
           >
             <option value="all">All</option>
             <option value="fashion">Fashion</option>
-            <option value="Watches">Watches</option>
-            <option value="Shoes">Shoes</option>
+            <option value="watches">Watches</option>
+            <option value="electronics">Electronics</option>
           </select>
 
           <button
@@ -294,7 +282,7 @@ useEffect(() => {
                 ❤️ Wishlist ({wishlistCount})
               </button>
 
-              {isAdmin && (
+              {isAuthenticated && isAdmin && (
                 <button onClick={() => { navigate("/admin"); setOpenMenu(false); }}>
                   ADMIN
                 </button>

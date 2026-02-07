@@ -1,44 +1,45 @@
-import api from "./api";
+const API_URL = import.meta.env.VITE_API_URL || "https://elegance-commerce.onrender.com/api";
 
-// REGISTER USER
-export const registerUser = async (userData) => {
-  try {
-    const res = await api.post("/auth/register/", userData);
-    return res.data;
-  } catch (err) {
-    throw new Error(
-      err.response?.data?.error || "Registration failed"
-    );
+export const login = async (email, password) => {
+  const res = await fetch(`${API_URL}/auth/login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.detail || "Login failed");
   }
+
+  // STORE TOKEN
+  localStorage.setItem("token", data.access);
+
+  // STORE USER INFO (VERY IMPORTANT FOR ADMIN)
+  const userRes = await fetch(`${API_URL}/auth/me/`, {
+    headers: {
+      Authorization: `Bearer ${data.access}`,
+    },
+  });
+
+  const user = await userRes.json();
+  localStorage.setItem("user", JSON.stringify(user));
+
+  return user;
 };
 
-// LOGIN USER (ADMIN + NORMAL)
-export const loginUser = async (userData) => {
-  try {
-    const res = await api.post("/auth/login/", userData);
-    const data = res.data;
-
-    localStorage.setItem("access", data.access);
-
-    // Always store boolean as string
-    localStorage.setItem(
-      "isAdmin",
-      data.is_admin ? "true" : "false"
-    );
-
-    localStorage.setItem("username", data.username);
-
-    return data;
-  } catch (err) {
-    throw new Error(
-      err.response?.data?.error || "Login failed"
-    );
-  }
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
-// LOGOUT USER
-export const logoutUser = () => {
-  localStorage.removeItem("access");
-  localStorage.removeItem("isAdmin");
-  localStorage.removeItem("username");
+export const getAuthState = () => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  return {
+    isAuthenticated: !!token,
+    isAdmin: user?.is_staff === true,
+  };
 };
