@@ -157,12 +157,12 @@ export default function Navbar() {
 
           {/* ADMIN — SHOW ONLY ON DESKTOP */}
           {isAuthenticated && isAdmin && (
-            <Link
-              to="/admin"
-              className="hidden md:inline text-sm font-medium"
+            <button
+              onClick={() => navigate("/admin")}
+              className="text-sm font-medium"
             >
               ADMIN PANEL
-            </Link>
+            </button>
           )}
 
           {/* PROFILE */}
