@@ -113,7 +113,7 @@ export default function Navbar() {
             <option value="all">All</option>
             <option value="fashion">Fashion</option>
             <option value="watches">Watches</option>
-            <option value="electronics">Electronics</option>
+            <option value="shoes">Shoes</option>
           </select>
 
           <button
