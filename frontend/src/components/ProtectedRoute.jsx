@@ -1,15 +1,11 @@
-import { Navigate, useLocation } from "react-router-dom";
-import PageSkeleton from "./PageSkeleton";
+import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem("access");
-  const location = useLocation();
 
-  // No token → go to login
   if (!token) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" replace />;
   }
 
-  // Token exists → allow access
   return children;
 }
