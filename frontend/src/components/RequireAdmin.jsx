@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
 
 export default function RequireAdmin({ children }) {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  if (!user.is_staff) {
+  if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 

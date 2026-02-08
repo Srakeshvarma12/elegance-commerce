@@ -158,7 +158,7 @@ export default function Navbar() {
           {/* ADMIN — SHOW ONLY ON DESKTOP */}
           {isAuthenticated && isAdmin && (
             <button
-              onClick={() => navigate("/admin")}
+              onClick={() => navigate("/admin-panel")}
               className="text-sm font-medium"
             >
               ADMIN PANEL
@@ -284,7 +284,7 @@ export default function Navbar() {
               {/* ADMIN — MOBILE ONLY INSIDE HAMBURGER */}
               {isAuthenticated && isAdmin && (
                 <button
-                  onClick={() => { navigate("/admin"); setOpenMenu(false); }}
+                  onClick={() => { navigate("/admin-panel"); setOpenMenu(false); }}
                   className="font-semibold"
                 >
                   ADMIN PANEL

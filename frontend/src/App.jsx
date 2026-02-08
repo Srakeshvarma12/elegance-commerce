@@ -28,7 +28,7 @@ export default function App() {
     <Routes>
       <Route element={<MainLayout />}>
 
-        {/* PUBLIC ROUTES */}
+        {/* ---------- PUBLIC ROUTES ---------- */}
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
@@ -38,7 +38,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
 
-        {/* USER PROTECTED ROUTES */}
+        {/* ---------- USER PROTECTED ROUTES ---------- */}
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
@@ -46,51 +46,11 @@ export default function App() {
         <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
-        {/* ✅ ADMIN ROUTES — PROPERLY PROTECTED */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminDashboard />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/products"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminProducts />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/orders"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminOrders />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/products/new"
-          element={
-            <ProtectedRoute>
-              <RequireAdmin>
-                <AdminAddProduct />
-              </RequireAdmin>
-            </ProtectedRoute>
-          }
-        />
-
+        {/* ---------- ADMIN ROUTES (RENAMED TO AVOID DJANGO CONFLICT) ---------- */}
+        <Route path="/admin-panel" element={<ProtectedRoute><RequireAdmin><AdminDashboard /></RequireAdmin></ProtectedRoute>} />
+        <Route path="/admin-panel/products" element={<ProtectedRoute><RequireAdmin><AdminProducts /></RequireAdmin></ProtectedRoute>} />
+        <Route path="/admin-panel/orders" element={<ProtectedRoute><RequireAdmin><AdminOrders /></RequireAdmin></ProtectedRoute>} />
+        <Route path="/admin-panel/products/new" element={<ProtectedRoute><RequireAdmin><AdminAddProduct /></RequireAdmin></ProtectedRoute>} />
       </Route>
     </Routes>
   );
