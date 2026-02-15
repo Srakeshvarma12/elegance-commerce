@@ -44,7 +44,7 @@ class ProductListView(ListAPIView):
 
 
 class ProductDetailView(RetrieveAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related("variants")
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
 
