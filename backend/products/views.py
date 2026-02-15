@@ -10,10 +10,10 @@ class ProductListView(ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        search = self.request.query_params.get("search", "")
-        category = self.request.query_params.get("category", "")
+        qs = Product.objects.all().order_by("-created_at")
 
-        qs = Product.objects.prefetch_related("variants").all().order_by("-created_at")
+        search = self.request.query_params.get("search")
+        category = self.request.query_params.get("category")
 
         if search:
             qs = qs.filter(name__icontains=search)
@@ -28,15 +28,16 @@ class ProductListView(ListAPIView):
         category = request.query_params.get("category", "")
         page = request.query_params.get("page", "1")
 
+        # IMPORTANT: unique cache key per filter combination
         cache_key = f"products_{search}_{category}_{page}"
-        cached_response = cache.get(cache_key)
 
-        if cached_response:
-            return cached_response
+        cached = cache.get(cache_key)
+        if cached:
+            return cached
 
         response = super().list(request, *args, **kwargs)
-        cache.set(cache_key, response, 60 * 5)
 
+        cache.set(cache_key, response, 60 * 5)
         return response
 
 
