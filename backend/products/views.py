@@ -12,24 +12,32 @@ class ProductListView(ListAPIView):
     def get_queryset(self):
         search = self.request.query_params.get("search", "")
         category = self.request.query_params.get("category", "")
-        page = self.request.query_params.get("page", "1")
 
-        cache_key = f"products_{search}_{category}_{page}"
-        cached_queryset = cache.get(cache_key)
-
-        if cached_queryset:
-            return cached_queryset
-
-        queryset = Product.objects.prefetch_related("variants").all()
+        qs = Product.objects.prefetch_related("variants").all().order_by("-created_at")
 
         if search:
-            queryset = queryset.filter(name__icontains=search)
+            qs = qs.filter(name__icontains=search)
 
         if category and category.lower() != "all":
-            queryset = queryset.filter(category__iexact=category)
+            qs = qs.filter(category__iexact=category)
 
-        cache.set(cache_key, queryset, 60 * 5)
-        return queryset
+        return qs
+
+    def list(self, request, *args, **kwargs):
+        search = request.query_params.get("search", "")
+        category = request.query_params.get("category", "")
+        page = request.query_params.get("page", "1")
+
+        cache_key = f"products_{search}_{category}_{page}"
+        cached_response = cache.get(cache_key)
+
+        if cached_response:
+            return cached_response
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response, 60 * 5)
+
+        return response
 
 
 class ProductDetailView(RetrieveAPIView):
