@@ -17,48 +17,33 @@ export default function Navbar() {
   const [category, setCategory] = useState("all");
   const [showSearch, setShowSearch] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-
   const [openProfile, setOpenProfile] = useState(false);
+
   const profileRef = useRef(null);
   const searchRef = useRef(null);
 
   const { isAuthenticated, isAdmin } = getAuthState();
 
-  // Close profile when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+    const close = e => {
+      if (profileRef.current && !profileRef.current.contains(e.target))
         setOpenProfile(false);
-      }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // Close search when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        showSearch &&
-        searchRef.current &&
-        !searchRef.current.contains(event.target)
-      ) {
+    const close = e => {
+      if (searchRef.current && !searchRef.current.contains(e.target))
         setShowSearch(false);
-      }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSearch]);
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
 
   const logout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("username");
-    localStorage.removeItem("is_admin");
-    setOpenMenu(false);
-    setOpenProfile(false);
+    localStorage.clear();
     navigate("/login");
   };
 
@@ -73,29 +58,21 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-white border-b border-black z-50">
-      <div className="h-20 px-4 md:px-10 flex items-center justify-between gap-4">
+
+      {/* MAIN BAR */}
+      <div className="h-20 px-4 md:px-10 flex items-center justify-between gap-3">
 
         {/* LOGO */}
         <Link
           to="/"
-          className="text-xl md:text-2xl font-serif tracking-widest hover:opacity-70 transition whitespace-nowrap"
+          className="shrink-0 text-xl md:text-2xl font-serif tracking-widest whitespace-nowrap"
         >
           ÉLÉGANCE
         </Link>
 
-        {/* MOBILE SEARCH TOGGLE */}
-        <button
-          onClick={() => setShowSearch(s => !s)}
-          className="md:hidden text-xl"
-        >
-          {/* 🔍 */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-          </svg>
-        </button>
-
         {/* DESKTOP SEARCH */}
-        <div className="hidden md:flex items-center gap-3 w-full max-w-xl mx-6">
+        <div className="hidden lg:flex items-center gap-3 flex-1 max-w-xl mx-6">
+
           <input
             type="text"
             placeholder="Search products"
@@ -108,7 +85,7 @@ export default function Navbar() {
           <select
             value={category}
             onChange={e => setCategory(e.target.value)}
-            className="border border-black px-3 py-2 text-sm cursor-pointer"
+            className="border border-black px-3 py-2 text-sm"
           >
             <option value="all">All</option>
             <option value="fashion">Fashion</option>
@@ -124,13 +101,26 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* ACTION ICONS */}
-        <div className="flex items-center gap-4 md:gap-8">
+        {/* RIGHT ICONS */}
+        <div className="flex items-center gap-4 md:gap-6 shrink-0">
 
-          <Link to="/shop" className="hidden md:inline hover:opacity-70">
+          {/* MOBILE SEARCH TOGGLE */}
+        <button
+          onClick={() => setShowSearch(s => !s)}
+          className="md:hidden text-xl"
+        >
+          {/* 🔍 */}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+          </svg>
+        </button>
+
+          {/* SHOP TEXT (desktop only) */}
+          <Link to="/shop" className="hidden lg:inline hover:opacity-70">
             🛍️ SHOP
           </Link>
 
+          {/* WISHLIST */}
           <button
             onClick={() => navigate("/wishlist")}
             className="relative text-xl"
@@ -143,9 +133,10 @@ export default function Navbar() {
             )}
           </button>
 
+          {/* CART */}
           <button
             onClick={() => navigate("/cart")}
-            className="relative text-lg md:text-base"
+            className="relative text-lg"
           >
             🛒
             {cartCount > 0 && (
@@ -155,16 +146,13 @@ export default function Navbar() {
             )}
           </button>
 
-          {/* ADMIN — SHOW ONLY ON DESKTOP */}
+          {/* ADMIN */}
           {isAuthenticated && isAdmin && (
             <button
-              onClick={() => {
-                navigate("/admin-panel");
-                setOpenMenu(false);
-              }}
-              className="text-sm font-medium"
+              onClick={() => navigate("/admin-panel")}
+              className="hidden md:block text-sm"
             >
-              ADMIN PANEL
+              ADMIN
             </button>
           )}
 
@@ -173,64 +161,39 @@ export default function Navbar() {
             <div ref={profileRef} className="relative hidden md:block">
               <button
                 onClick={() => setOpenProfile(p => !p)}
-                className="w-11 h-11 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition"
-                title={username}
+                className="w-10 h-10 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white"
               >
                 👤
               </button>
 
               {openProfile && (
                 <div className="absolute right-0 mt-3 w-48 border bg-white shadow-xl">
-                  <button
-                    onClick={() => { navigate("/account"); setOpenProfile(false); }}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-100"
-                  >
-                    My Account
-                  </button>
-
-                  <button
-                    onClick={() => { navigate("/orders"); setOpenProfile(false); }}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-100"
-                  >
-                    Orders
-                  </button>
-
-                  <button
-                    onClick={logout}
-                    className="w-full text-left px-4 py-3 text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
+                  <button onClick={()=>navigate("/account")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Account</button>
+                  <button onClick={()=>navigate("/orders")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Orders</button>
+                  <button onClick={logout} className="w-full text-left px-4 py-3 text-red-600 hover:bg-gray-100">Logout</button>
                 </div>
               )}
             </div>
           )}
 
           {!token && (
-            <Link
-              to="/login"
-              className="border border-black px-4 md:px-6 py-2 text-xs md:text-sm hover:bg-black hover:text-white transition"
-            >
+            <Link to="/login" className="border border-black px-4 py-2 text-xs hover:bg-black hover:text-white">
               LOGIN
             </Link>
           )}
 
-          {/* MOBILE HAMBURGER */}
-          <button
-            onClick={() => setOpenMenu(true)}
-            className="md:hidden text-2xl"
-          >
+          {/* MOBILE MENU */}
+          <button onClick={() => setOpenMenu(true)} className="lg:hidden text-2xl">
             ☰
           </button>
+
         </div>
       </div>
 
-      {/* MOBILE SEARCH PANEL */}
+      {/* SEARCH PANEL (mobile + tablet) */}
       {showSearch && (
-        <div
-          ref={searchRef}
-          className="md:hidden px-4 pb-4 flex flex-col gap-3 border-t border-black bg-white"
-        >
+        <div ref={searchRef} className="lg:hidden px-4 pb-4 flex flex-col gap-3 border-t border-black bg-white">
+
           <input
             type="text"
             placeholder="Search products"
@@ -247,78 +210,41 @@ export default function Navbar() {
             <option value="all">All</option>
             <option value="fashion">Fashion</option>
             <option value="watches">Watches</option>
-            <option value="electronics">Electronics</option>
+            <option value="shoes">Shoes</option>
           </select>
 
           <button
             onClick={handleSearch}
-            className="border border-black px-5 py-2 text-sm hover:bg-black hover:text-white transition"
+            className="border border-black px-5 py-2 text-sm hover:bg-black hover:text-white"
           >
             Search
           </button>
         </div>
       )}
 
-      {/* MOBILE SLIDE MENU */}
+      {/* MOBILE DRAWER */}
       {openMenu && (
         <div className="fixed inset-0 bg-black/40 z-50">
           <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-xl p-6">
-            <button
-              onClick={() => setOpenMenu(false)}
-              className="mb-6 text-xl"
-            >
-              ✕ Close
-            </button>
+
+            <button onClick={()=>setOpenMenu(false)} className="mb-6 text-xl">✕</button>
 
             <div className="flex flex-col gap-6 text-lg">
-
-              <button onClick={() => { navigate("/shop"); setOpenMenu(false); }}>
-                🛍️ Shop
-              </button>
-
-              <button onClick={() => { navigate("/cart"); setOpenMenu(false); }}>
-                🛒 Cart ({cartCount})
-              </button>
-
-              <button onClick={() => { navigate("/wishlist"); setOpenMenu(false); }}>
-                ❤️ Wishlist ({wishlistCount})
-              </button>
-
-              {/* ADMIN — MOBILE ONLY INSIDE HAMBURGER */}
-              {isAuthenticated && isAdmin && (
-                <button
-                  onClick={() => {
-                    navigate("/admin-panel");
-                    setOpenMenu(false);
-                  }}
-                  className="text-sm font-medium"
-                >
-                  ADMIN PANEL
-                </button>
-              )}
+              <button onClick={()=>navigate("/shop")}>🛍 Shop</button>
+              <button onClick={()=>navigate("/cart")}>🛒 Cart ({cartCount})</button>
+              <button onClick={()=>navigate("/wishlist")}>❤️ Wishlist ({wishlistCount})</button>
 
               {token && (
                 <>
-                  <button onClick={() => { navigate("/account"); setOpenMenu(false); }}>
-                    My Account
-                  </button>
-
-                  <button onClick={() => { navigate("/orders"); setOpenMenu(false); }}>
-                    Orders
-                  </button>
-
-                  <button onClick={logout} className="text-red-600">
-                    Logout
-                  </button>
+                  <button onClick={()=>navigate("/account")}>Account</button>
+                  <button onClick={()=>navigate("/orders")}>Orders</button>
+                  <button onClick={logout} className="text-red-600">Logout</button>
                 </>
               )}
 
               {!token && (
-                <button onClick={() => { navigate("/login"); setOpenMenu(false); }}>
-                  Login
-                </button>
+                <button onClick={()=>navigate("/login")}>Login</button>
               )}
-
             </div>
           </div>
         </div>
