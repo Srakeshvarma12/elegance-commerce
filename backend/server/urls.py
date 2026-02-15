@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.http import JsonResponse
 from django.views.static import serve
 from .views import health
+from .views import home
 
 # ---- HEALTH CHECK / ROOT ROUTE ----
 def home(request):
@@ -29,6 +30,7 @@ urlpatterns = [
     path("api/reviews/", include("reviews.urls")),
     path("api/wishlist/", include("wishlist.urls")),
     path("health/", health),
+    path("", home),
 ]
 
 # ✅ MEDIA SERVING (CRITICAL FIX)
