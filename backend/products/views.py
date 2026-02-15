@@ -28,16 +28,18 @@ class ProductListView(ListAPIView):
         category = request.query_params.get("category", "")
         page = request.query_params.get("page", "1")
 
-        # IMPORTANT: unique cache key per filter combination
         cache_key = f"products_{search}_{category}_{page}"
 
-        cached = cache.get(cache_key)
-        if cached:
-            return cached
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            from rest_framework.response import Response
+            return Response(cached_data)
 
         response = super().list(request, *args, **kwargs)
 
-        cache.set(cache_key, response, 60 * 5)
+        # ✅ cache serialized data only
+        cache.set(cache_key, response.data, 60 * 5)
+
         return response
 
 
