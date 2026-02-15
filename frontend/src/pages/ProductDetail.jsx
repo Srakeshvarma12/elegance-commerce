@@ -96,7 +96,7 @@ export default function ProductDetail() {
   };
 
   if (!product) {
-    return <div className="p-20 text-center">Product not found</div>;
+    return <div className="p-20 text-center">Loading...</div>;
   }
 
   const sizes = [...new Set(variants.map(v => v.size))];

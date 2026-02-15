@@ -158,15 +158,13 @@ export default function Navbar() {
           {/* ADMIN — SHOW ONLY ON DESKTOP */}
           {isAuthenticated && isAdmin && (
             <button
-              onClick={() =>
-                window.open(
-                  "https://elegance-commerce.onrender.com/admin/",
-                  "_blank"
-                )
-              }
+              onClick={() => {
+                navigate("/admin-panel");
+                setOpenMenu(false);
+              }}
               className="text-sm font-medium"
             >
-              DJANGO ADMIN
+              ADMIN PANEL
             </button>
           )}
 
@@ -289,15 +287,13 @@ export default function Navbar() {
               {/* ADMIN — MOBILE ONLY INSIDE HAMBURGER */}
               {isAuthenticated && isAdmin && (
                 <button
-                  onClick={() =>
-                    window.open(
-                      "https://elegance-commerce.onrender.com/admin/",
-                      "_blank"
-                    )
-                  }
+                  onClick={() => {
+                    navigate("/admin-panel");
+                    setOpenMenu(false);
+                  }}
                   className="text-sm font-medium"
                 >
-                  DJANGO ADMIN
+                  ADMIN PANEL
                 </button>
               )}
 

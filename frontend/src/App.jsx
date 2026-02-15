@@ -39,18 +39,105 @@ export default function App() {
         <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
 
         {/* ---------- USER PROTECTED ROUTES ---------- */}
-        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* ---------- ADMIN ROUTES (RENAMED TO AVOID DJANGO CONFLICT) ---------- */}
-        <Route path="/admin-panel" element={<ProtectedRoute><RequireAdmin><AdminDashboard /></RequireAdmin></ProtectedRoute>} />
-        <Route path="/admin-panel/products" element={<ProtectedRoute><RequireAdmin><AdminProducts /></RequireAdmin></ProtectedRoute>} />
-        <Route path="/admin-panel/orders" element={<ProtectedRoute><RequireAdmin><AdminOrders /></RequireAdmin></ProtectedRoute>} />
-        <Route path="/admin-panel/products/new" element={<ProtectedRoute><RequireAdmin><AdminAddProduct /></RequireAdmin></ProtectedRoute>} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ---------- ADMIN ROUTES (REACT ADMIN ONLY) ---------- */}
+        <Route
+          path="/admin-panel"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminDashboard />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-panel/products"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminProducts />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-panel/orders"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminOrders />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-panel/products/new"
+          element={
+            <ProtectedRoute>
+              <RequireAdmin>
+                <AdminAddProduct />
+              </RequireAdmin>
+            </ProtectedRoute>
+          }
+        />
+
       </Route>
     </Routes>
   );
