@@ -1,9 +1,10 @@
-from django.contrib import admin
+﻿from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from django.views.static import serve
+from .views import health
 
 # ---- HEALTH CHECK / ROOT ROUTE ----
 def home(request):
@@ -27,12 +28,10 @@ urlpatterns = [
     path("api/payments/", include("payments.urls")),
     path("api/reviews/", include("reviews.urls")),
     path("api/wishlist/", include("wishlist.urls")),
+    path("health/", health),
 ]
 
-# --------------------------------------------------
 # ✅ MEDIA SERVING (CRITICAL FIX)
-# --------------------------------------------------
-
 if settings.DEBUG:
     # Local development
     urlpatterns += static(
