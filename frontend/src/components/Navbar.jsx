@@ -104,27 +104,22 @@ export default function Navbar() {
         {/* RIGHT ICONS */}
         <div className="flex items-center gap-4 md:gap-6 shrink-0">
 
-          {/* MOBILE SEARCH TOGGLE */}
-        <button
-          onClick={() => setShowSearch(s => !s)}
-          className="md:hidden text-xl"
-        >
-          {/* 🔍 */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-          </svg>
-        </button>
+          {/* SEARCH ICON (mobile + tablet) */}
+          <button
+            onClick={() => setShowSearch(s => !s)}
+            className="lg:hidden text-xl"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+          </button>
 
-          {/* SHOP TEXT (desktop only) */}
           <Link to="/shop" className="hidden lg:inline hover:opacity-70">
             🛍️ SHOP
           </Link>
 
           {/* WISHLIST */}
-          <button
-            onClick={() => navigate("/wishlist")}
-            className="relative text-xl"
-          >
+          <button onClick={() => navigate("/wishlist")} className="relative text-xl">
             🖤
             {wishlistCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
@@ -134,10 +129,7 @@ export default function Navbar() {
           </button>
 
           {/* CART */}
-          <button
-            onClick={() => navigate("/cart")}
-            className="relative text-lg"
-          >
+          <button onClick={() => navigate("/cart")} className="relative text-lg">
             🛒
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
@@ -148,10 +140,7 @@ export default function Navbar() {
 
           {/* ADMIN */}
           {isAuthenticated && isAdmin && (
-            <button
-              onClick={() => navigate("/admin-panel")}
-              className="hidden md:block text-sm"
-            >
+            <button onClick={() => navigate("/admin-panel")} className="hidden md:block text-sm">
               ADMIN
             </button>
           )}
@@ -168,8 +157,8 @@ export default function Navbar() {
 
               {openProfile && (
                 <div className="absolute right-0 mt-3 w-48 border bg-white shadow-xl">
-                  <button onClick={()=>navigate("/account")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Account</button>
-                  <button onClick={()=>navigate("/orders")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Orders</button>
+                  <button onClick={() => navigate("/account")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Account</button>
+                  <button onClick={() => navigate("/orders")} className="w-full text-left px-4 py-3 hover:bg-gray-100">Orders</button>
                   <button onClick={logout} className="w-full text-left px-4 py-3 text-red-600 hover:bg-gray-100">Logout</button>
                 </div>
               )}
@@ -186,13 +175,17 @@ export default function Navbar() {
           <button onClick={() => setOpenMenu(true)} className="lg:hidden text-2xl">
             ☰
           </button>
-
         </div>
       </div>
 
-      {/* SEARCH PANEL (mobile + tablet) */}
-      {showSearch && (
-        <div ref={searchRef} className="lg:hidden px-4 pb-4 flex flex-col gap-3 border-t border-black bg-white">
+      {/* ANIMATED SEARCH PANEL */}
+      <div
+        ref={searchRef}
+        className={`lg:hidden overflow-hidden transition-all duration-300 border-t border-black bg-white ${
+          showSearch ? "max-h-60 opacity-100 py-4" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 flex flex-col gap-3">
 
           <input
             type="text"
@@ -219,31 +212,32 @@ export default function Navbar() {
           >
             Search
           </button>
+
         </div>
-      )}
+      </div>
 
       {/* MOBILE DRAWER */}
       {openMenu && (
         <div className="fixed inset-0 bg-black/40 z-50">
           <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-xl p-6">
 
-            <button onClick={()=>setOpenMenu(false)} className="mb-6 text-xl">✕</button>
+            <button onClick={() => setOpenMenu(false)} className="mb-6 text-xl">✕</button>
 
             <div className="flex flex-col gap-6 text-lg">
-              <button onClick={()=>navigate("/shop")}>🛍 Shop</button>
-              <button onClick={()=>navigate("/cart")}>🛒 Cart ({cartCount})</button>
-              <button onClick={()=>navigate("/wishlist")}>❤️ Wishlist ({wishlistCount})</button>
+              <button onClick={() => navigate("/shop")}>🛍 Shop</button>
+              <button onClick={() => navigate("/cart")}>🛒 Cart ({cartCount})</button>
+              <button onClick={() => navigate("/wishlist")}>❤️ Wishlist ({wishlistCount})</button>
 
               {token && (
                 <>
-                  <button onClick={()=>navigate("/account")}>Account</button>
-                  <button onClick={()=>navigate("/orders")}>Orders</button>
+                  <button onClick={() => navigate("/account")}>Account</button>
+                  <button onClick={() => navigate("/orders")}>Orders</button>
                   <button onClick={logout} className="text-red-600">Logout</button>
                 </>
               )}
 
               {!token && (
-                <button onClick={()=>navigate("/login")}>Login</button>
+                <button onClick={() => navigate("/login")}>Login</button>
               )}
             </div>
           </div>
