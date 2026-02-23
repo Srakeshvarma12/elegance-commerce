@@ -88,9 +88,11 @@ export default function Navbar() {
             className="border border-black px-3 py-2 text-sm"
           >
             <option value="all">All</option>
-            <option value="fashion">Fashion</option>
+            <option value="clothing">Clothing</option>
             <option value="watches">Watches</option>
-            <option value="shoes">Shoes</option>
+            <option value="footwear">Footwear</option>
+            <option value="electronics">Electronics</option>
+            <option value="sunglasses">Sunglasses</option>            
           </select>
 
           <button
