@@ -191,9 +191,13 @@ export default function Home() {
                 </div>
               ))
               : featured.map(p => (
-                <div key={p.id} className="transition hover:-translate-y-2 duration-300">
+                <Link
+                  key={p.id}
+                  to={`/product/${p.id}`}
+                  className="transition hover:-translate-y-2 duration-300 block"
+                >
                   <ProductCard product={p} />
-                </div>
+                </Link>
               ))}
 
           </div>
@@ -220,9 +224,13 @@ export default function Home() {
                 </div>
               ))
               : latest.map(p => (
-                <div key={p.id} className="transition hover:-translate-y-2 duration-300">
+                <Link
+                  key={p.id}
+                  to={`/product/${p.id}`}
+                  className="transition hover:-translate-y-2 duration-300 block"
+                >
                   <ProductCard product={p} />
-                </div>
+                </Link>
               ))}
 
           </div>
