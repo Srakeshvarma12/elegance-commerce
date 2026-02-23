@@ -41,7 +41,7 @@ export default function LoginToBuyModal({ isOpen, onClose }) {
       >
         {/* BRAND */}
         <h1 className="text-2xl font-bold text-center mb-2 tracking-wide">
-          ÉLÉGANCE
+          ELEGANCE
         </h1>
 
         <h2 className="text-xl font-semibold text-center mb-3">
