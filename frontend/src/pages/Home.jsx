@@ -32,6 +32,7 @@ const [index, setIndex] = useState(0);
 const [offset, setOffset] = useState({ x: 0, y: 0 });
 const [featured, setFeatured] = useState([]);
 const [latest, setLatest] = useState([]);
+const [loading, setLoading] = useState(true);
 
 useEffect(() => {
 const id = setInterval(() => {
@@ -41,17 +42,19 @@ return () => clearInterval(id);
 }, []);
 
 useEffect(() => {
-  async function load() {
-    try {
-      const f = await getFeaturedProducts();
-      const l = await getLatestProducts();
-      setFeatured(f.results || []);
-      setLatest(l.results || []);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  load();
+async function load() {
+try {
+const f = await getFeaturedProducts();
+const l = await getLatestProducts();
+setFeatured(f.results || []);
+setLatest(l.results || []);
+} catch (err) {
+console.error(err);
+} finally {
+setLoading(false);
+}
+}
+load();
 }, []);
 
 const handleMouseMove = e => {
@@ -63,123 +66,143 @@ setOffset({ x, y });
 
 const slide = slides[index];
 
-return ( <div className="w-full">
+return (
+<div className="w-full">
 
-  <section
-    onMouseMove={handleMouseMove}
-    className="relative h-screen w-full overflow-hidden select-none"
-  >
-    {slides.map((s, i) => (
-      <img
-        key={i}
-        src={s.img}
-        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[2000ms] ease-out ${
-          i === index ? "opacity-100 scale-110" : "opacity-0 scale-100"
-        }`}
-        style={{
-          transform:
-            i === index
-              ? `scale(1.1) translate(${offset.x}px, ${offset.y}px)`
-              : "scale(1)"
-        }}
-      />
-    ))}
+{/* HERO */}
+<section
+onMouseMove={handleMouseMove}
+className="relative h-screen w-full overflow-hidden select-none"
+>
+{slides.map((s, i) => (
+<img
+key={i}
+src={s.img}
+loading="lazy"
+className={`absolute inset-0 w-full h-full object-cover transition-all duration-[2000ms] ease-out ${
+i === index ? "opacity-100 scale-110" : "opacity-0 scale-100"
+}`}
+style={{
+transform:
+i === index
+? `scale(1.1) translate(${offset.x}px, ${offset.y}px)`
+: "scale(1)"
+}}
+/>
+))}
 
-    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/80" />
+<div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/80" />
 
-    <div className="relative z-10 h-full flex items-center">
-      <div className="max-w-5xl px-6 ml-6 md:ml-24 text-white">
+<div className="relative z-10 h-full flex items-center">
+<div className="max-w-5xl px-6 ml-6 md:ml-24 text-white animate-fadeUp">
 
-        <p
-          key={slide.subtitle}
-          className="uppercase tracking-widest text-sm mb-4 animate-fadeUp"
-        >
-          {slide.subtitle}
-        </p>
+<p className="uppercase tracking-widest text-sm mb-4">
+{slide.subtitle}
+</p>
 
-        <h1
-          key={slide.title}
-          className="text-5xl md:text-7xl font-serif mb-8 animate-fadeUp"
-        >
-          {slide.title}
-        </h1>
+<h1 className="text-5xl md:text-7xl font-serif mb-8">
+{slide.title}
+</h1>
 
-        <p
-          key={slide.desc}
-          className="max-w-xl mb-10 leading-8 opacity-90 animate-fadeUp"
-        >
-          {slide.desc}
-        </p>
+<p className="max-w-xl mb-10 leading-8 opacity-90">
+{slide.desc}
+</p>
 
-        <Link
-          to="/shop"
-          className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 uppercase tracking-widest text-sm transition hover:bg-black hover:text-white hover:scale-105"
-        >
-          Explore Collection →
-        </Link>
+<Link
+to="/shop"
+className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 uppercase tracking-widest text-sm transition hover:bg-black hover:text-white hover:scale-105"
+>
+Explore Collection →
+</Link>
 
-        <div className="flex gap-3 mt-14">
-          {slides.map((_, i) => (
-            <div
-              key={i}
-              className={`h-[3px] rounded-full transition-all duration-500 ${
-                i === index
-                  ? "w-10 bg-white"
-                  : "w-4 bg-white/40"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
+<div className="flex gap-3 mt-14">
+{slides.map((_, i) => (
+<div
+key={i}
+className={`h-[3px] rounded-full transition-all duration-500 ${
+i === index ? "w-10 bg-white" : "w-4 bg-white/40"
+}`}
+/>
+))}
+</div>
 
-  <section className="py-28 bg-gray-50">
-    <div className="container-max grid md:grid-cols-3 gap-16 text-center">
-      <div>
-        <h3 className="text-xl font-serif mb-4">Precision Crafted</h3>
-        <p className="text-gray-600 leading-7">
-          Engineered with world-class accuracy and attention to detail.
-        </p>
-      </div>
+</div>
+</div>
+</section>
 
-      <div>
-        <h3 className="text-xl font-serif mb-4">Premium Materials</h3>
-        <p className="text-gray-600 leading-7">
-          Sapphire glass, surgical steel, and elite-grade mechanisms.
-        </p>
-      </div>
+{/* FEATURES */}
+<section className="py-28 bg-gray-50">
+<div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-16 text-center">
 
-      <div>
-        <h3 className="text-xl font-serif mb-4">Modern Heritage</h3>
-        <p className="text-gray-600 leading-7">
-          A balance between classic elegance and modern minimalism.
-        </p>
-      </div>
-    </div>
-  </section>
+{[
+["Precision Crafted","Engineered with world-class accuracy and attention to detail."],
+["Premium Materials","Sapphire glass, surgical steel, and elite-grade mechanisms."],
+["Modern Heritage","A balance between classic elegance and modern minimalism."]
+].map(([title,desc]) => (
+<div key={title} className="transition hover:-translate-y-2 duration-300">
+<h3 className="text-xl font-serif mb-4">{title}</h3>
+<p className="text-gray-600 leading-7">{desc}</p>
+</div>
+))}
 
-  <section className="py-24">
-    <div className="container-max">
-      <h2 className="text-3xl font-serif mb-12">Featured Products</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-        {featured.map(p => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
-    </div>
-  </section>
+</div>
+</section>
 
-  <section className="py-24 bg-gray-50">
-    <div className="container-max">
-      <h2 className="text-3xl font-serif mb-12">Latest Arrivals</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-        {latest.map(p => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
-    </div>
-  </section>
+{/* FEATURED */}
+<section className="py-24">
+<div className="max-w-7xl mx-auto px-6">
+
+<h2 className="text-3xl font-serif mb-12 text-center">
+Featured Products
+</h2>
+
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+{loading
+? [...Array(8)].map((_,i)=>(
+<div key={i} className="animate-pulse">
+<div className="aspect-square bg-gray-200 rounded-xl"/>
+<div className="h-4 bg-gray-200 mt-4 w-2/3"/>
+<div className="h-4 bg-gray-200 mt-2 w-1/3"/>
+</div>
+))
+: featured.map(p => (
+<div key={p.id} className="transition hover:-translate-y-2 duration-300">
+<ProductCard product={p}/>
+</div>
+))}
+
+</div>
+</div>
+</section>
+
+{/* LATEST */}
+<section className="py-24 bg-gray-50">
+<div className="max-w-7xl mx-auto px-6">
+
+<h2 className="text-3xl font-serif mb-12 text-center">
+Latest Arrivals
+</h2>
+
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+{loading
+? [...Array(8)].map((_,i)=>(
+<div key={i} className="animate-pulse">
+<div className="aspect-square bg-gray-200 rounded-xl"/>
+<div className="h-4 bg-gray-200 mt-4 w-2/3"/>
+<div className="h-4 bg-gray-200 mt-2 w-1/3"/>
+</div>
+))
+: latest.map(p => (
+<div key={p.id} className="transition hover:-translate-y-2 duration-300">
+<ProductCard product={p}/>
+</div>
+))}
+
+</div>
+</div>
+</section>
 
 </div>
 );
