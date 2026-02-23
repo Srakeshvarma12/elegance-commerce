@@ -10,6 +10,8 @@ class Product(models.Model):
 
     image = CloudinaryField("image")
 
+    featured = models.BooleanField(default=False, db_index=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

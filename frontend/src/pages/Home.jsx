@@ -1,73 +1,177 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ProductCard from "../components/ProductCard";
+import {
+  getFeaturedProducts,
+  getLatestProducts,
+} from "../services/productService";
 
 export default function Home() {
-  return (
-    <div className="w-full">
-      <section className="relative h-screen w-full overflow-hidden">
-        <img
-  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000"
-  alt="Hero"
-  className="absolute inset-0 w-full h-full object-cover"
-/>
+const slides = [
+{
+img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000",
+subtitle: "Spring Collection 2026",
+title: "Timeless Elegance",
+desc: "Discover our curated collection of premium fashion and accessories designed for those who appreciate sophistication."
+},
+{
+img: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
+subtitle: "Luxury Edition",
+title: "Modern Prestige",
+desc: "Experience refined craftsmanship blended with contemporary design."
+},
+{
+img: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b",
+subtitle: "New Arrivals",
+title: "Style Redefined",
+desc: "Explore bold silhouettes crafted for modern icons."
+}
+];
 
+const [index, setIndex] = useState(0);
+const [offset, setOffset] = useState({ x: 0, y: 0 });
+const [featured, setFeatured] = useState([]);
+const [latest, setLatest] = useState([]);
 
-        <div className="absolute inset-0 bg-black/40"></div>
+useEffect(() => {
+const id = setInterval(() => {
+setIndex(prev => (prev + 1) % slides.length);
+}, 6000);
+return () => clearInterval(id);
+}, []);
 
-        <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-5xl px-6 ml-6 md:ml-24 text-white">
-            <p className="uppercase tracking-widest text-sm mb-4">
-              Spring Collection 2026
-            </p>
+useEffect(() => {
+getFeaturedProducts().then(setFeatured);
+getLatestProducts().then(setLatest);
+}, []);
 
-            <h1 className="text-5xl md:text-7xl font-serif mb-8">
-              Timeless Elegance
-            </h1>
+const handleMouseMove = e => {
+const { innerWidth, innerHeight } = window;
+const x = (e.clientX / innerWidth - 0.5) * 30;
+const y = (e.clientY / innerHeight - 0.5) * 30;
+setOffset({ x, y });
+};
 
-            <p className="max-w-xl mb-10 leading-8">
-              Discover our curated collection of premium fashion and accessories,
-              designed for those who appreciate sophistication.
-            </p>
+const slide = slides[index];
 
-            <Link
-              to="/shop"
-              className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 uppercase tracking-widest text-sm hover:bg-black hover:text-white transition"
-            >
-              Explore Collection →
-            </Link>
-          </div>
+return ( <div className="w-full">
+
+  <section
+    onMouseMove={handleMouseMove}
+    className="relative h-screen w-full overflow-hidden select-none"
+  >
+    {slides.map((s, i) => (
+      <img
+        key={i}
+        src={s.img}
+        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[2000ms] ease-out ${
+          i === index ? "opacity-100 scale-110" : "opacity-0 scale-100"
+        }`}
+        style={{
+          transform:
+            i === index
+              ? `scale(1.1) translate(${offset.x}px, ${offset.y}px)`
+              : "scale(1)"
+        }}
+      />
+    ))}
+
+    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/80" />
+
+    <div className="relative z-10 h-full flex items-center">
+      <div className="max-w-5xl px-6 ml-6 md:ml-24 text-white">
+
+        <p
+          key={slide.subtitle}
+          className="uppercase tracking-widest text-sm mb-4 animate-fadeUp"
+        >
+          {slide.subtitle}
+        </p>
+
+        <h1
+          key={slide.title}
+          className="text-5xl md:text-7xl font-serif mb-8 animate-fadeUp"
+        >
+          {slide.title}
+        </h1>
+
+        <p
+          key={slide.desc}
+          className="max-w-xl mb-10 leading-8 opacity-90 animate-fadeUp"
+        >
+          {slide.desc}
+        </p>
+
+        <Link
+          to="/shop"
+          className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 uppercase tracking-widest text-sm transition hover:bg-black hover:text-white hover:scale-105"
+        >
+          Explore Collection →
+        </Link>
+
+        <div className="flex gap-3 mt-14">
+          {slides.map((_, i) => (
+            <div
+              key={i}
+              className={`h-[3px] rounded-full transition-all duration-500 ${
+                i === index
+                  ? "w-10 bg-white"
+                  : "w-4 bg-white/40"
+              }`}
+            />
+          ))}
         </div>
-      </section>
-
-      <section className="py-28 bg-gray-50">
-        <div className="container-max grid md:grid-cols-3 gap-16 text-center">
-          <div>
-            <h3 className="text-xl font-serif mb-4">
-              Precision Crafted
-            </h3>
-            <p className="text-gray-600 leading-7">
-              Engineered with world-class accuracy and attention to detail.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-serif mb-4">
-              Premium Materials
-            </h3>
-            <p className="text-gray-600 leading-7">
-              Sapphire glass, surgical steel, and elite-grade mechanisms.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-serif mb-4">
-              Modern Heritage
-            </h3>
-            <p className="text-gray-600 leading-7">
-              A balance between classic elegance and modern minimalism.
-            </p>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
-  );
+  </section>
+
+  <section className="py-28 bg-gray-50">
+    <div className="container-max grid md:grid-cols-3 gap-16 text-center">
+      <div>
+        <h3 className="text-xl font-serif mb-4">Precision Crafted</h3>
+        <p className="text-gray-600 leading-7">
+          Engineered with world-class accuracy and attention to detail.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-serif mb-4">Premium Materials</h3>
+        <p className="text-gray-600 leading-7">
+          Sapphire glass, surgical steel, and elite-grade mechanisms.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-xl font-serif mb-4">Modern Heritage</h3>
+        <p className="text-gray-600 leading-7">
+          A balance between classic elegance and modern minimalism.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section className="py-24">
+    <div className="container-max">
+      <h2 className="text-3xl font-serif mb-12">Featured Products</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+        {featured.map(p => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section className="py-24 bg-gray-50">
+    <div className="container-max">
+      <h2 className="text-3xl font-serif mb-12">Latest Arrivals</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+        {latest.map(p => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+</div>
+);
 }

@@ -10,7 +10,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
-    variants = ProductVariantSerializer(many=True, read_only=True)
+    variants = ProductVariantSerializer(many=True)
 
     class Meta:
         model = Product
@@ -22,8 +22,31 @@ class ProductSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return None
 
+    def create(self, validated_data):
+        variants_data = validated_data.pop("variants", [])
+        product = Product.objects.create(**validated_data)
 
-# Lightweight serializer for product listing
+        for variant in variants_data:
+            ProductVariant.objects.create(product=product, **variant)
+
+        return product
+
+    def update(self, instance, validated_data):
+        variants_data = validated_data.pop("variants", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if variants_data is not None:
+            instance.variants.all().delete()
+
+            for variant in variants_data:
+                ProductVariant.objects.create(product=instance, **variant)
+
+        return instance
+
+
 class ProductListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
