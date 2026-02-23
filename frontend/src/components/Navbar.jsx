@@ -67,7 +67,7 @@ export default function Navbar() {
           to="/"
           className="shrink-0 text-xl md:text-2xl font-serif tracking-widest whitespace-nowrap"
         >
-          ÉLÉGANCE
+          ELEGANCE
         </Link>
 
         {/* DESKTOP SEARCH */}
