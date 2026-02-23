@@ -41,8 +41,17 @@ return () => clearInterval(id);
 }, []);
 
 useEffect(() => {
-getFeaturedProducts().then(setFeatured);
-getLatestProducts().then(setLatest);
+  async function load() {
+    try {
+      const f = await getFeaturedProducts();
+      const l = await getLatestProducts();
+      setFeatured(f.results || []);
+      setLatest(l.results || []);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  load();
 }, []);
 
 const handleMouseMove = e => {
