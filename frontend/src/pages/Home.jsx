@@ -15,7 +15,7 @@ export default function Home() {
       desc: "Discover our curated collection of premium fashion and accessories designed for those who appreciate sophistication."
     },
     {
-      img: "https://images.unsplash.com/photo-1763069228076-c7e3995e1769?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fGx1eGUlMjBmYXNoaW9ufGVufDB8fDB8fHww",
+      img: "https://images.unsplash.com/photo-1590739225287-bd31519780c3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzN8fGx1eGUlMjBmYXNoaW9ufGVufDB8fDB8fHww",
       subtitle: "Luxury Edition",
       title: "Modern Prestige",
       desc: "Experience refined craftsmanship blended with contemporary design."
