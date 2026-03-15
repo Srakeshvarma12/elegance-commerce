@@ -11,7 +11,7 @@ Full-stack e-commerce application with a React + Vite frontend and a Django REST
 - Admin panel for product and order management.
 
 **Tech Stack**
-- Frontend: React, Vite, React Router, Zustand, Tailwind CSS, Axios.
+- Frontend: React, Vite, React Router, Redux, Tailwind CSS, Axios.
 - Backend: Django, Django REST Framework, Simple JWT, PostgreSQL, Cloudinary, Razorpay.
 - Deployment: Render (backend), Vercel (frontend SPA routing).
 
