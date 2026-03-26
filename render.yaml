@@ -4,3 +4,20 @@ services:
     env: python
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "gunicorn backend.server.wsgi:application"
+env:
+  - key: SECRET_KEY
+    value: unsafe-secret-key-change-me
+  - key: DATABASE_URL
+    value: 
+  - key: CLOUDINARY_CLOUD_NAME
+    value: 
+  - key: CLOUDINARY_API_KEY
+    value: 
+  - key: CLOUDINARY_API_SECRET
+    value: 
+  - key: RAZORPAY_KEY_ID
+    value: 
+  - key: RAZORPAY_KEY_SECRET
+    value: 
+  - key: RAZORPAY_WEBHOOK_SECRET
+    value: 

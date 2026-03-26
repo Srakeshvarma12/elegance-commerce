@@ -13,7 +13,7 @@ export default function useWishlistCount() {
       }
 
       try {
-        const res = await api.get("/wishlist/my/");
+        const res = await api.get("wishlist/my/");
         setCount(Array.isArray(res.data) ? res.data.length : 0);
       } catch {
         setCount(0);

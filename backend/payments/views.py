@@ -56,8 +56,8 @@ def verify_payment(request):
         )
 
         order.is_paid = True
-        order.payment_id = data.get("razorpay_payment_id")
-        order.status = "Paid"
+        order.razorpay_payment_id = data.get("razorpay_payment_id")
+        order.status = "PAID"
         order.save()
 
         return Response({"status": "success"})
@@ -93,8 +93,8 @@ def razorpay_webhook(request):
 
         order = Order.objects.get(razorpay_order_id=razorpay_order_id)
         order.is_paid = True
-        order.status = "Paid"
-        order.payment_id = payment_id
+        order.status = "PAID"
+        order.razorpay_payment_id = payment_id
         order.save()
 
     return Response({"status": "ok"})

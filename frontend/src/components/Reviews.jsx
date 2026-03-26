@@ -9,7 +9,7 @@ export default function Reviews({ productId }) {
   const token = localStorage.getItem("access");
 
   const fetchReviews = async () => {
-    const res = await api.get(`/reviews/${productId}/`);
+    const res = await api.get(`/reviews/product/${productId}/`);
     setReviews(res.data);
   };
 
@@ -24,7 +24,7 @@ export default function Reviews({ productId }) {
     }
 
     try {
-      const res = await api.post(`/reviews/add/${productId}/`, {
+      const res = await api.post(`/reviews/product/${productId}/add/`, {
         rating,
         comment,
       });

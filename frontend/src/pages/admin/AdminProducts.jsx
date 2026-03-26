@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND = import.meta.env.VITE_BACKEND_URL;
+import api from "../../services/api";
 
 export default function AdminProducts() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("access");
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,9 +19,18 @@ export default function AdminProducts() {
   }, []);
 
   const fetchProducts = async () => {
+    setLoading(true);
+    let allProducts = [];
+    let url = "/products/";
+
     try {
-      const res = await axios.get(`${BACKEND}/api/products/`);
-      setProducts(res.data);
+      while (url) {
+        const res = await api.get(url);
+        const data = res.data;
+        allProducts = allProducts.concat(data.results || []);
+        url = data.next;
+      }
+      setProducts(allProducts);
     } catch (err) {
       console.error("Error fetching products:", err);
     } finally {
@@ -35,9 +42,7 @@ export default function AdminProducts() {
     if (!window.confirm("Delete this product?")) return;
 
     try {
-      await axios.delete(`${BACKEND}/api/products/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/products/${id}/`);
 
       alert("Product deleted");
       fetchProducts();

@@ -5,12 +5,12 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const isAdmin = localStorage.getItem("is_admin") === "true";
 
-    if (!user.is_staff) {
+    if (!isAdmin) {
       navigate("/"); // send normal users back to home
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div style={{ padding: "40px" }}>

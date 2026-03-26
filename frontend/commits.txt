@@ -1,0 +1,13 @@
+﻿88af37d added featured and latest endpoints
+e49ccdb added featured and latest endpoints
+857bb9d added featured and latest endpoints
+aabf277 added featured and latest endpoints
+d174d41 added featured and latest endpoints
+ac73a02 added featured and latest endpoints
+ba5286c added featured and latest endpoints
+4ad1edf added featured and latest endpoints
+6db13ed added featured and latest endpoints
+6b8b103 added featured and latest endpoints
+3a8cd1a Fix production settings for Render
+41aa9f0 Updated all files
+d8894d4 Initial project setup

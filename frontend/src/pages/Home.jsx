@@ -15,7 +15,7 @@ export default function Home() {
       desc: "Discover our curated collection of premium fashion and accessories designed for those who appreciate sophistication."
     },
     {
-      img: "https://images.unsplash.com/photo-1590739225287-bd31519780c3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzN8fGx1eGUlMjBmYXNoaW9ufGVufDB8fDB8fHww",
+      img: "https://images.unsplash.com/photo-1590739225287-bd31519780c3?w=600&auto=format&fit=crop&q=60",
       subtitle: "Luxury Edition",
       title: "Modern Prestige",
       desc: "Experience refined craftsmanship blended with contemporary design."
@@ -34,6 +34,7 @@ export default function Home() {
   const [latest, setLatest] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /* ---------- AUTO SLIDE ---------- */
   useEffect(() => {
     const id = setInterval(() => {
       setIndex(prev => (prev + 1) % slides.length);
@@ -41,6 +42,7 @@ export default function Home() {
     return () => clearInterval(id);
   }, []);
 
+  /* ---------- FETCH PRODUCTS ---------- */
   useEffect(() => {
     async function load() {
       try {
@@ -57,10 +59,10 @@ export default function Home() {
     load();
   }, []);
 
+  /* ---------- MOUSE PARALLAX ---------- */
   const handleMouseMove = e => {
-    const { innerWidth, innerHeight } = window;
-    const x = (e.clientX / innerWidth - 0.5) * 30;
-    const y = (e.clientY / innerHeight - 0.5) * 30;
+    const x = (e.clientX / window.innerWidth - 0.5) * 40;
+    const y = (e.clientY / window.innerHeight - 0.5) * 40;
     setOffset({ x, y });
   };
 
@@ -70,19 +72,20 @@ export default function Home() {
 
   return (
     <div className="w-full">
-
-      {/* HERO */}
+      {/* ================= HERO 3D ================= */}
       <section
         onMouseMove={handleMouseMove}
-        className="relative h-screen w-full overflow-hidden select-none"
+        className="relative h-screen overflow-hidden select-none"
+        style={{ perspective: "2000px" }}
       >
+        {/* Background Slides */}
         {slides.map((s, i) => (
           <img
             key={i}
             src={s.img}
-            loading="lazy"
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-[2000ms] ease-out ${i === index ? "opacity-100 scale-110" : "opacity-0 scale-100"
-              }`}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-[2000ms] ${
+              i === index ? "opacity-100 scale-110" : "opacity-0 scale-100"
+            }`}
             style={{
               transform:
                 i === index
@@ -92,66 +95,76 @@ export default function Home() {
           />
         ))}
 
+        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/80" />
 
-        <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-5xl px-6 ml-6 md:ml-24 text-white">
+        {/* Floating Glow */}
+        <div
+          className="absolute w-[700px] h-[700px] rounded-full bg-white/10 blur-3xl"
+          style={{
+            transform: `translate(${offset.x * 2}px, ${offset.y * 2}px)`
+          }}
+        />
 
-            <p className="uppercase tracking-widest text-sm mb-4">
+        {/* Hero Content */}
+        <div className="relative z-10 h-full flex items-center">
+          <div
+            className="ml-10 md:ml-28 text-white transition-transform duration-200"
+            style={{
+              transform: `rotateX(${offset.y * 0.15}deg) rotateY(${offset.x * 0.15}deg)`
+            }}
+          >
+            <p className="uppercase tracking-[6px] text-sm mb-6 opacity-80">
               {slide.subtitle}
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-serif mb-8">
+            <h1 className="text-6xl md:text-8xl font-serif mb-10 leading-tight">
               {slide.title}
             </h1>
 
-            <p className="max-w-xl mb-10 leading-8 opacity-90">
+            <p className="max-w-xl mb-10 opacity-90">
               {slide.desc}
             </p>
 
             <Link
               to="/shop"
-              className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 uppercase tracking-widest text-sm transition hover:bg-black hover:text-white hover:scale-105"
+              className="px-12 py-5 bg-white font-bold uppercase tracking-widest text-xs rounded-full shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
-              Explore Collection →
+              <span className="text-ink" style={{ color: "#12100d", opacity: 1 }}>Explore Now</span>
             </Link>
 
+            {/* Indicators */}
             <div className="flex gap-3 mt-14">
               {slides.map((_, i) => (
                 <div
                   key={i}
-                  className={`h-[3px] rounded-full transition-all duration-500 ${i === index ? "w-10 bg-white" : "w-4 bg-white/40"
-                    }`}
+                  className={`h-[3px] rounded-full transition-all duration-500 ${
+                    i === index ? "w-12 bg-white" : "w-4 bg-white/40"
+                  }`}
                 />
               ))}
             </div>
-
           </div>
         </div>
       </section>
 
-
-      {/* DYNAMIC CATEGORIES */}
+      {/* ================= CATEGORIES ================= */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-
           <h2 className="text-3xl font-serif text-center mb-14">
             Shop By Category
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-
             {categories.map(cat => {
-
               const item = [...featured, ...latest].find(p => p.category === cat);
 
               return (
                 <Link
-                  to={`/shop?category=${encodeURIComponent(cat)}`}
                   key={cat}
+                  to={`/shop?category=${encodeURIComponent(cat)}`}
                   className="group text-center"
                 >
-
                   <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
                     <img
                       src={item?.image}
@@ -159,29 +172,22 @@ export default function Home() {
                     />
                   </div>
 
-                  <p className="mt-4 font-medium tracking-wide">
-                    {cat}
-                  </p>
-
+                  <p className="mt-4 font-medium tracking-wide">{cat}</p>
                 </Link>
               );
             })}
-
           </div>
         </div>
       </section>
 
-
-      {/* FEATURED */}
+      {/* ================= FEATURED ================= */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-
           <h2 className="text-3xl font-serif mb-12 text-center">
             Featured Products
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
             {loading
               ? [...Array(8)].map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -191,30 +197,22 @@ export default function Home() {
                 </div>
               ))
               : featured.map(p => (
-                <Link
-                  key={p.id}
-                  to={`/product/${p.id}`}
-                  className="transition hover:-translate-y-2 duration-300 block"
-                >
+                <Link key={p.id} to={`/product/${p.id}`} className="block hover:-translate-y-2 transition">
                   <ProductCard product={p} />
                 </Link>
               ))}
-
           </div>
         </div>
       </section>
 
-
-      {/* LATEST */}
+      {/* ================= LATEST ================= */}
       <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-
           <h2 className="text-3xl font-serif mb-12 text-center">
             Latest Arrivals
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
             {loading
               ? [...Array(8)].map((_, i) => (
                 <div key={i} className="animate-pulse">
@@ -224,19 +222,13 @@ export default function Home() {
                 </div>
               ))
               : latest.map(p => (
-                <Link
-                  key={p.id}
-                  to={`/product/${p.id}`}
-                  className="transition hover:-translate-y-2 duration-300 block"
-                >
+                <Link key={p.id} to={`/product/${p.id}`} className="block hover:-translate-y-2 transition">
                   <ProductCard product={p} />
                 </Link>
               ))}
-
           </div>
         </div>
       </section>
-
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function AdminOrders() {
   const updateStatus = async (orderId, status) => {
     try {
       await api.put(
-        `/orders/admin/orders/${orderId}/update/`,
+        `orders/admin/orders/${orderId}/update/`,
         { status }
       );
 
@@ -37,7 +37,7 @@ export default function AdminOrders() {
       return;
     }
 
-    api.get("/orders/admin/orders/")
+    api.get("orders/admin/orders/")
       .then(res => {
         setOrders(res.data);
         setLoading(false);
@@ -104,7 +104,7 @@ export default function AdminOrders() {
               <p className="uppercase tracking-widest text-sm mb-2">
                 Items
               </p>
-              {order.items.map(item => (
+              {(order.items || []).map(item => (
                 <p key={item.id}>
                   {item.name} × {item.quantity}
                 </p>

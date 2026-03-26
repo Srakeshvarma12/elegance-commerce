@@ -1,4 +1,4 @@
-﻿"""
+"""
 Django settings for server project.
 Production Optimized Build
 """
@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key-change-me")
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "elegance-commerce.onrender.com",
@@ -26,10 +26,10 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 X_FRAME_OPTIONS = "DENY"
 
 REST_FRAMEWORK = {
@@ -63,13 +63,14 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
 
-    "accounts",
+    "accounts.apps.AccountsConfig",
     "products",
     "orders",
     "payments",
     "wishlist",
     "reviews",
     "dashboard",
+    "cart.apps.CartConfig",
 ]
 
 MIDDLEWARE = [
@@ -104,12 +105,18 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
+# DATABASE_URL = os.getenv("DATABASE_URL")
+# if DATABASE_URL:
+#     DATABASES["default"] = dj_database_url.config(
+#         default=DATABASE_URL,
+#         conn_max_age=600,
+#         ssl_require=True,
+#     )
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -138,6 +145,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://elegance-commerce.onrender.com",
 ]
 
@@ -167,6 +177,6 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "ERROR",
+        "level": "INFO",
     },
 }

@@ -18,7 +18,8 @@ from django.core.exceptions import ValidationError
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, ProfileSerializer
+from .models import UserProfile
 
 
 # REGISTER
@@ -64,10 +65,43 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile_data = ProfileSerializer(profile).data
         return Response({
             "username": user.username,
             "email": user.email,
-            "is_admin": user.is_staff
+            "is_admin": user.is_staff,
+            "member_since": user.date_joined,
+            "profile": profile_data,
+        })
+
+    def put(self, request):
+        user = request.user
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+
+        user_data = request.data.get("user", {})
+        profile_payload = request.data.get("profile", request.data)
+
+        if "username" in user_data:
+            user.username = user_data["username"]
+        if "email" in user_data:
+            user.email = user_data["email"]
+        user.save()
+
+        serializer = ProfileSerializer(
+            profile,
+            data=profile_payload,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            "username": user.username,
+            "email": user.email,
+            "is_admin": user.is_staff,
+            "member_since": user.date_joined,
+            "profile": serializer.data,
         })
 
 

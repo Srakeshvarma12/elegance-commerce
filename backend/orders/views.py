@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from products.models import Product
+from payments.razorpay_client import create_razorpay_order
 
 
 # USER: LIST + CREATE OWN ORDERS
@@ -47,11 +48,27 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 name=product.name,
                 quantity=item["quantity"],
                 price=item["price"],
-                image=product.image.url if product.image else None
+                image=product.image if product.image else None
             )
 
-        serializer = self.get_serializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # ✅ NEW: Create Razorpay order
+        try:
+            razorpay_order = create_razorpay_order(
+                amount=total_amount,
+                receipt=f"order_{order.id}"
+            )
+            order.razorpay_order_id = razorpay_order["id"]
+            order.save()
+            
+            # Add to response data
+            response_data = OrderSerializer(order).data
+            response_data["razorpay_order_id"] = razorpay_order["id"]
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            # Still return 201 but maybe with a warning? 
+            # For now, let's just return what we have.
+            serializer = self.get_serializer(order)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # USER: ORDER DETAIL (OWN ORDER ONLY)

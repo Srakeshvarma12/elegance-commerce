@@ -8,7 +8,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=100, db_index=True)
 
-    image = CloudinaryField("image")
+    image = models.CharField(max_length=500, null=True, blank=True)
 
     featured = models.BooleanField(default=False, db_index=True)
     

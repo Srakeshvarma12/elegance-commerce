@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND = import.meta.env.VITE_BACKEND_URL;
+import api from "../../services/api";
 
 export default function AdminAddProduct() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("access");
 
   const [form, setForm] = useState({
     name: "",
@@ -38,11 +36,8 @@ export default function AdminAddProduct() {
     if (image) data.append("image", image);
 
     try {
-      await axios.post(`${BACKEND}/api/products/`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      await api.post("/products/admin/create/", data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Product added successfully");

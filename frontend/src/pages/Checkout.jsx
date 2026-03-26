@@ -1,11 +1,13 @@
 import { useCartStore } from "../store/cartStore";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api"; 
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useUserStore } from "../store/userStore";
 
 export default function Checkout() {
   const cart = useCartStore(state => state.cart);
   const clearCart = useCartStore(state => state.clearCart);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const total = cart.reduce(
     (sum, item) => sum + Number(item.price) * item.quantity,
@@ -17,7 +19,7 @@ export default function Checkout() {
 
     const token = localStorage.getItem("access");
     if (!token) {
-      navigate("/login");
+      navigate("/login", { state: { from: location.pathname } });
       return;
     }
 
@@ -39,105 +41,116 @@ export default function Checkout() {
       });
 
       orderId = orderRes.data.id;
+      const razorpayOrderId = orderRes.data.razorpay_order_id;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: total * 100,
+        currency: "INR",
+        name: "Elegance",
+        description: "Order Payment",
+        order_id: razorpayOrderId,
+
+        handler: async response => {
+          try {
+            await api.put(`/orders/${orderId}/update/`, {
+              payment_id: response.razorpay_payment_id,
+            });
+
+            clearCart();
+            navigate("/account");
+          } catch (err) {
+            console.error(err);
+            alert("Payment succeeded, but order update failed.");
+          }
+        },
+
+        theme: { color: "#111111" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
       console.error(err);
       alert("Server error while creating order.");
       return;
     }
-
-    const options = {
-      key: "rzp_test_1DP5mmOlF5G5ag",
-      amount: total * 100,
-      currency: "INR",
-      name: "Élégance",
-      description: "Order Payment",
-
-      handler: async response => {
-        try {
-          await api.put(`/orders/${orderId}/update/`, {
-            payment_id: response.razorpay_payment_id,
-          });
-
-          clearCart();
-          navigate("/account");
-        } catch (err) {
-          console.error(err);
-          alert("Payment succeeded, but order update failed.");
-        }
-      },
-
-      theme: { color: "#000000" },
-    };
-
-    new window.Razorpay(options).open();
   };
 
   return (
-    <div className="min-h-screen bg-white pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-20">
+    <div className="max-w-5xl mx-auto px-6 py-12">
+      <header className="mb-12 border-b border-black/5 pb-8 text-center md:text-left">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-muted mb-4 opacity-70">Payment</p>
+        <h1 className="text-4xl md:text-5xl font-display mb-4">Finalize Order</h1>
+        <p className="text-muted max-w-xl text-sm leading-relaxed">
+          Review your selection and proceed to secure checkout.
+        </p>
+      </header>
 
-        <h1 className="text-2xl md:text-3xl font-serif tracking-widest uppercase mb-8 md:mb-12">
-          Checkout
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
-
-          {/* CART ITEMS */}
-          <div>
+      <div className="grid lg:grid-cols-[1fr_380px] gap-12 items-start">
+        <section className="flex flex-col gap-8">
+          <div className="bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-black/5 p-10 shadow-sm">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] mb-8 pb-4 border-b border-black/5 opacity-60">Selection</h2>
+            
             {cart.length === 0 ? (
-              <p className="text-gray-500">Your cart is empty.</p>
+              <p className="text-center py-12 text-muted text-sm italic">Empty selection.</p>
             ) : (
-              <div className="space-y-4 md:space-y-6">
+              <div className="flex flex-col gap-6">
                 {cart.map(item => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center border-b pb-4 text-sm md:text-base"
-                  >
-                    <span className="uppercase tracking-widest">
-                      {item.name} × {item.quantity}
-                    </span>
-                    <span className="font-medium">
-                      ₹{Number(item.price) * item.quantity}
-                    </span>
+                  <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-6 items-center">
+                    <div className="w-16 h-20 bg-black/5 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="text-xs uppercase tracking-[0.2em] font-medium truncate max-w-[200px]">{item.name}</h3>
+                      <p className="text-[10px] text-muted mt-1 uppercase tracking-widest">Qty: {item.quantity}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-display text-sm tracking-widest">INR {Number(item.price) * item.quantity}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
+        </section>
 
-          {/* ORDER SUMMARY */}
-          <div className="border border-black p-6 md:p-10 h-fit">
-            <h2 className="uppercase tracking-widest text-sm md:text-lg">
-              Order Summary
-            </h2>
-
-            <div className="mt-6 md:mt-8 space-y-3 md:space-y-4 text-sm">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{total}</span>
+        <aside className="sticky top-28">
+          <div className="bg-white rounded-[2.5rem] border border-black/10 p-10 shadow-2xl">
+            <h2 className="text-[10px] uppercase tracking-[0.4em] mb-8 pb-4 border-b border-black/5 opacity-60">Summary</h2>
+            
+            <div className="flex flex-col gap-5 mb-8">
+              <div className="flex justify-between items-center text-xs">
+                <span className="opacity-40 uppercase tracking-widest">Subtotal</span>
+                <span className="tracking-widest font-medium">INR {total}</span>
               </div>
-
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>Free</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="opacity-40 uppercase tracking-widest">Shipping</span>
+                <span className="text-green-600 uppercase tracking-[0.2em] font-semibold">Complimentary</span>
               </div>
+            </div>
 
-              <div className="border-t pt-4 flex justify-between text-base md:text-lg">
-                <span>Total</span>
-                <span className="font-semibold">₹{total}</span>
+            <div className="pt-8 border-t border-black/5 mb-10 flex justify-between items-end">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-muted mb-1">Grand Total</p>
+                <span className="font-display text-2xl tracking-widest text-ink">INR {total}</span>
               </div>
             </div>
 
             <button
               onClick={handlePayment}
               disabled={cart.length === 0}
-              className="mt-8 w-full bg-black text-white py-3 md:py-4 uppercase tracking-widest text-xs md:text-sm hover:opacity-80 transition disabled:opacity-50"
+              className="btn-elegant w-full py-5 bg-ink text-white text-[10px] hover:bg-ink/90 shadow-xl shadow-black/10 disabled:opacity-30 disabled:scale-100"
             >
-              Complete Purchase
+              Secure Checkout –&gt;
             </button>
-          </div>
 
-        </div>
+            <div className="mt-8 flex items-center justify-center gap-2 opacity-30 grayscale contrast-125 scale-75">
+              {/* Razorpay Logo Placeholder/SVG could go here */}
+              <p className="text-[9px] uppercase tracking-[0.3em] font-bold">Secure Payment via Razorpay</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

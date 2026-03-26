@@ -39,14 +39,7 @@ export default function App() {
         <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
 
         {/* ---------- USER PROTECTED ROUTES ---------- */}
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/cart" element={<Cart />} />
 
         <Route
           path="/checkout"
@@ -57,41 +50,13 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/account"
-          element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/account" element={<Account />} />
 
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/profile" element={<Profile />} />
 
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/orders" element={<Orders />} />
 
-        <Route
-          path="/wishlist"
-          element={
-            <ProtectedRoute>
-              <Wishlist />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/wishlist" element={<Wishlist />} />
 
         {/* ---------- ADMIN ROUTES (REACT ADMIN ONLY) ---------- */}
         <Route

@@ -13,7 +13,10 @@ export const refreshAccessToken = async () => {
 
     return newAccess;
   } catch {
-    localStorage.clear();
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+    localStorage.removeItem("is_admin");
     return null;
   }
 };

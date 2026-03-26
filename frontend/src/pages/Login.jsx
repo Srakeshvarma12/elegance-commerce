@@ -1,119 +1,109 @@
+import { useUserStore } from "../store/userStore";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useCartStore } from "../store/cartStore";
+import { useWishlistStore } from "../store/wishlistStore";
+import { login } from "../services/authService";
 
 export default function Login() {
+  const { fetchProfile } = useUserStore();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const syncCart = useCartStore(state => state.syncCart);
+  const loadCart = useCartStore(state => state.loadCart);
 
-  const handleLogin = async (e) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogin = async e => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // 1️⃣ LOGIN FIRST (this is what really matters)
-      const res = await api.post("/auth/login/", {
-        username,
-        password,
-      });
+      await login(username, password);
+      await fetchProfile(); // Sync user store after login
 
-      const data = res.data;
+      await syncCart();
+      await loadCart();
 
-      // Store tokens (your app already relies on these)
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
-      localStorage.setItem("username", username);
-
-      // 2️⃣ TRY to get profile — BUT DON'T FAIL LOGIN IF IT 404s
-      try {
-        const profileRes = await api.get("/auth/profile/", {
-          headers: {
-            Authorization: `Bearer ${data.access}`,
-          },
-        });
-
-        const user = profileRes.data;
-
-        // If backend gives admin flag, store it
-        localStorage.setItem(
-          "is_admin",
-          user.is_admin ? "true" : "false"
-        );
-      } catch (profileError) {
-        console.warn(
-          "Profile endpoint missing or failed — defaulting is_admin to false"
-        );
-        localStorage.setItem("is_admin", "false");
-      }
-
-      // ✅ Always go to home on successful login
-      navigate("/", { replace: true });
-
+      const redirectTo = location.state?.from || "/";
+      navigate(redirectTo, { replace: true });
     } catch (err) {
-      // This only runs if /auth/login/ itself fails
-      setError("Invalid username or password");
+      setError(err.message || "Invalid username or password");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-6">
-      <div className="w-full max-w-md">
-
-        <h1 className="text-3xl font-serif mb-8 text-center tracking-widest">
-          Login
-        </h1>
+    <div className="max-w-7xl mx-auto px-6 py-20 flex justify-center">
+      <div className="w-full max-w-lg bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-black/5 p-12 shadow-[var(--shadow-soft)]">
+        <header className="mb-10 text-center">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-muted mb-4 opacity-70">Welcome</p>
+          <h1 className="text-4xl font-display mb-4 text-ink">Sign In</h1>
+          <p className="text-muted text-sm leading-relaxed max-w-[280px] mx-auto">
+            Access your curated collection and refined shopping experience.
+          </p>
+        </header>
 
         {error && (
-          <p className="text-red-600 text-sm mb-4 text-center">
+          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs text-center">
             {error}
-          </p>
+          </div>
         )}
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-
-          <input
-            placeholder="Username"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            required
-            className="border border-black px-4 py-3 outline-none"
-          />
-
-          <div className="relative">
+        <form onSubmit={handleLogin} className="flex flex-col gap-6">
+          <div>
+            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Username</label>
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
+              placeholder="Username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
               required
-              className="border border-black px-4 py-3 w-full outline-none pr-12"
             />
+          </div>
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(p => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
+          <div>
+            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Password</label>
+            <div className="relative">
+              <input
+                className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition pr-16"
+                placeholder="Password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(p => !p)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest text-muted hover:text-ink transition px-2 py-1"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           <button
             disabled={loading}
-            className="border border-black py-3 mt-4 uppercase tracking-widest text-sm hover:bg-black hover:text-white transition disabled:opacity-50"
+            className="btn-elegant w-full py-5 mt-4 text-[10px] bg-ink text-white hover:bg-ink/90 shadow-lg shadow-black/10 disabled:opacity-50 disabled:scale-100"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Authenticating..." : "Sign In"}
           </button>
-
         </form>
+
+        <p className="mt-10 text-center text-xs text-muted">
+          New here?{" "}
+          <Link to="/register" className="text-ink font-medium tracking-wide border-b border-ink/30 pb-0.5 hover:border-ink transition ml-1">
+            Create an account
+          </Link>
+        </p>
       </div>
     </div>
   );

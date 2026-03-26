@@ -14,12 +14,14 @@ export default function Orders() {
       return;
     }
 
-    api.get("/orders/")
+    api
+      .get("/orders/")
       .then(res => {
-        setOrders(res.data);
+        const data = res.data;
+        const results = Array.isArray(data) ? data : data.results || [];
+        setOrders(results);
       })
       .catch(err => {
-        // If unauthorized, clear token and redirect
         if (err.response?.status === 401) {
           localStorage.removeItem("access");
           navigate("/login");
@@ -28,18 +30,46 @@ export default function Orders() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen p-10">
-      <h1 className="text-3xl font-serif mb-8">My Orders</h1>
+    <div className="min-h-screen bg-cream pt-24">
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <h1 className="font-display text-3xl md:text-4xl tracking-[0.3em] uppercase mb-10">
+          My Orders
+        </h1>
 
-      {orders.length === 0 && <p>No orders yet.</p>}
+        {orders.length === 0 && (
+          <p className="text-muted">No orders yet.</p>
+        )}
 
-      {orders.map(o => (
-        <div key={o.id} className="border rounded-xl p-4 mb-4">
-          <p><b>Order ID:</b> {o.id}</p>
-          <p><b>Total:</b> ${o.total_amount}</p>
-          <p><b>Status:</b> {o.is_paid ? "Paid" : "Pending"}</p>
+        <div className="space-y-6">
+          {orders.map(order => (
+            <div
+              key={order.id}
+              className="border border-black/10 bg-white p-6"
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm">
+                <div>
+                  <p className="uppercase tracking-[0.3em] text-xs text-muted">
+                    Order ID
+                  </p>
+                  <p className="mt-1">{order.id}</p>
+                </div>
+                <div>
+                  <p className="uppercase tracking-[0.3em] text-xs text-muted">
+                    Total
+                  </p>
+                  <p className="mt-1">₹{order.total_amount}</p>
+                </div>
+                <div>
+                  <p className="uppercase tracking-[0.3em] text-xs text-muted">
+                    Status
+                  </p>
+                  <p className="mt-1">{order.is_paid ? "Paid" : "Pending"}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 }

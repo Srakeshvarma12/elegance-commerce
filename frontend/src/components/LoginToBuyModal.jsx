@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LoginToBuyModal({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ---- SCROLL SAFETY ----
   useEffect(() => {
@@ -31,51 +32,48 @@ export default function LoginToBuyModal({ isOpen, onClose }) {
       onClick={onClose}
     >
       <div
-        className="
-          bg-white rounded-2xl shadow-xl p-8 
-          w-[420px] 
-          transform transition-all duration-300
-          scale-95 animate-modalPop
-        "
-        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-[2rem] shadow-[var(--shadow-soft)] p-8 w-[420px] transform transition-all duration-300 scale-95 animate-modalPop"
+        onClick={e => e.stopPropagation()}
       >
         {/* BRAND */}
-        <h1 className="text-2xl font-bold text-center mb-2 tracking-wide">
-          ELEGANCE
+        <h1 className="font-display text-2xl text-center mb-2 tracking-[0.4em] uppercase">
+          Elegance
         </h1>
 
-        <h2 className="text-xl font-semibold text-center mb-3">
+        <h2 className="text-lg font-medium text-center mb-3">
           Sign in to continue
         </h2>
 
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-muted text-center mb-6 text-sm">
           You need to be logged in to add items to your cart or purchase products.
         </p>
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => navigate("/login")}
-            className="
-              w-full bg-black text-white py-2.5 rounded-lg
-              hover:bg-gray-900 transition
-            "
+            onClick={() =>
+              navigate("/login", {
+                state: { from: location.pathname + location.search },
+              })
+            }
+            className="w-full bg-[var(--color-ink)] text-white py-3 uppercase tracking-[0.3em] text-xs hover:opacity-80 transition"
           >
             Sign in
           </button>
 
           <button
-            onClick={() => navigate("/register")}
-            className="
-              w-full border border-black py-2.5 rounded-lg
-              hover:bg-gray-100 transition
-            "
+            onClick={() =>
+              navigate("/register", {
+                state: { from: location.pathname + location.search },
+              })
+            }
+            className="w-full border border-black/20 py-3 uppercase tracking-[0.3em] text-xs hover:bg-black hover:text-white transition"
           >
             Create your account
           </button>
 
           <button
             onClick={onClose}
-            className="text-gray-500 mt-2 hover:text-black"
+            className="text-muted mt-2 text-xs uppercase tracking-[0.3em] hover:text-black"
           >
             Cancel
           </button>
