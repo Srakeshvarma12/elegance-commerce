@@ -122,7 +122,7 @@ export default function Home() {
         <section className="section-container pb-24">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="label mb-2">Curated</p>
+              {/* <p className="label mb-2">Curated</p> */}
               <h2 className="heading-lg">Featured Products</h2>
             </div>
             <LiquidButton size="default" onClick={() => navigate('/shop')} className="!text-text-secondary text-sm font-medium">
