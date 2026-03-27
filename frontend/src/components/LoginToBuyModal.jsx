@@ -1,18 +1,17 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 export default function LoginToBuyModal({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ---- SCROLL SAFETY ----
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -22,61 +21,42 @@ export default function LoginToBuyModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="
-        fixed inset-0 
-        backdrop-blur-sm bg-black/40
-        flex items-center justify-center 
-        z-50
-        animate-fadeIn
-      "
+      className="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-[2rem] shadow-[var(--shadow-soft)] p-8 w-[420px] transform transition-all duration-300 scale-95 animate-modalPop"
+        className="bg-white rounded-2xl shadow-xl p-8 w-[400px] max-w-[90vw] animate-modalPop"
         onClick={e => e.stopPropagation()}
       >
-        {/* BRAND */}
-        <h1 className="font-display text-2xl text-center mb-2 tracking-[0.4em] uppercase">
-          Elegance
-        </h1>
-
-        <h2 className="text-lg font-medium text-center mb-3">
-          Sign in to continue
-        </h2>
-
-        <p className="text-muted text-center mb-6 text-sm">
-          You need to be logged in to add items to your cart or purchase products.
-        </p>
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-bold tracking-tight mb-2">Sign in to continue</h2>
+          <p className="text-sm text-text-muted">
+            You need an account to add items to your cart or make a purchase.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-3">
-          <button
-            onClick={() =>
-              navigate("/login", {
-                state: { from: location.pathname + location.search },
-              })
-            }
-            className="w-full bg-[var(--color-ink)] text-white py-3 uppercase tracking-[0.3em] text-xs hover:opacity-80 transition"
+          <LiquidButton
+            size="xl"
+            onClick={() => { navigate("/login", { state: { from: location.pathname + location.search } }); }}
+            className="!text-text-primary font-semibold w-full"
           >
-            Sign in
-          </button>
-
-          <button
-            onClick={() =>
-              navigate("/register", {
-                state: { from: location.pathname + location.search },
-              })
-            }
-            className="w-full border border-black/20 py-3 uppercase tracking-[0.3em] text-xs hover:bg-black hover:text-white transition"
+            Sign In
+          </LiquidButton>
+          <LiquidButton
+            size="lg"
+            onClick={() => { navigate("/register", { state: { from: location.pathname + location.search } }); }}
+            className="!text-text-secondary font-medium w-full"
           >
-            Create your account
-          </button>
-
-          <button
+            Create Account
+          </LiquidButton>
+          <LiquidButton
+            size="default"
             onClick={onClose}
-            className="text-muted mt-2 text-xs uppercase tracking-[0.3em] hover:text-black"
+            className="!text-text-muted w-full mt-1"
           >
             Cancel
-          </button>
+          </LiquidButton>
         </div>
       </div>
     </div>

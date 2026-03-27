@@ -1,6 +1,7 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import api from "../services/api";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 export default function ResetPassword() {
   const { uid, token } = useParams();
@@ -13,48 +14,47 @@ export default function ResetPassword() {
   const submit = async e => {
     e.preventDefault();
     setError("");
-
     try {
-      await api.post(`/auth/password-reset-confirm/${uid}/${token}/`, {
-        password,
-      });
-
-      setSuccess("Password reset successful");
+      await api.post(`/auth/password-reset-confirm/${uid}/${token}/`, { password });
+      setSuccess("Password updated successfully.");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      setError(err.response?.data?.error || "Reset failed");
+      setError(err.response?.data?.error || "Reset failed. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center px-6 pt-24 pb-20">
-      <form
-        onSubmit={submit}
-        className="w-full max-w-md p-8 border border-black/10 bg-white shadow-[var(--shadow-soft-tight)]"
-      >
-        <p className="uppercase tracking-[0.3em] text-xs text-muted text-center">
-          Password Reset
-        </p>
-        <h1 className="font-display text-2xl text-center mt-4 mb-6">
-          Set a new password
-        </h1>
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-slideUp">
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-block text-2xl font-bold tracking-[-0.04em] mb-6">ELEGANCE</Link>
+          <h1 className="heading-md mb-2">Set new password</h1>
+          <p className="text-sm text-text-muted">Choose a strong password for your account</p>
+        </div>
 
-        {error && <p className="text-red-600 mb-3">{error}</p>}
-        {success && <p className="text-green-600 mb-3">{success}</p>}
+        <div className="card p-8 md:p-10">
+          <form onSubmit={submit} className="flex flex-col gap-5">
+            <div>
+              <label className="form-label">New Password</label>
+              <input
+                type="password"
+                className="input"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Enter your new password"
+                required
+              />
+            </div>
 
-        <input
-          type="password"
-          placeholder="New password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="border border-black/10 px-4 py-3 w-full text-sm"
-          required
-        />
+            {error && <p className="text-sm text-error text-center bg-error/5 py-2.5 rounded-lg">{error}</p>}
+            {success && <p className="text-sm text-success text-center bg-success/5 py-2.5 rounded-lg">{success}</p>}
 
-        <button className="mt-6 w-full bg-[var(--color-ink)] text-white py-3 uppercase tracking-[0.3em] text-xs hover:opacity-80 transition">
-          Reset Password
-        </button>
-      </form>
+            <LiquidButton size="xl" className="!text-text-primary font-semibold w-full">
+              Update Password
+            </LiquidButton>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

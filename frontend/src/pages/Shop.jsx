@@ -1,25 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCartStore } from "../store/cartStore";
-import { useWishlistStore } from "../store/wishlistStore";
-import api from "../services/api";
-import { useUserStore } from "../store/userStore";
+import { fetchProducts as getProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const CATEGORY_OPTIONS = [
   "all",
-  "clothing",
-  "watches",
-  "footwear",
-  "electronics",
-  "sunglasses",
+  "Audio",
+  "Wearables",
+  "TV & Video",
+  "Accessories",
 ];
 
 const SORT_OPTIONS = [
-  { value: "newest", label: "Newest" },
-  { value: "price_low", label: "Price: Low to High" },
-  { value: "price_high", label: "Price: High to Low" },
-  { value: "name", label: "Name A-Z" },
+  { value: "newest", label: "Latest" },
+  { value: "price_low", label: "Price: Low → High" },
+  { value: "price_high", label: "Price: High → Low" },
+  { value: "name", label: "Name A–Z" },
 ];
 
 export default function Shop() {
@@ -29,10 +26,7 @@ export default function Shop() {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState("");
 
-  const observerRef = useRef(null);
-  const controllerRef = useRef(null);
   const loadMoreRef = useRef(null);
-
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
@@ -40,20 +34,12 @@ export default function Shop() {
   const search = params.get("search") || "";
   const category = params.get("category") || "all";
   const sort = params.get("sort") || "newest";
-  const min = params.get("min") || "";
-  const max = params.get("max") || "";
 
-  const [filters, setFilters] = useState({
-    search,
-    category,
-    sort,
-    min,
-    max,
-  });
+  const [filters, setFilters] = useState({ search, category, sort });
 
   useEffect(() => {
-    setFilters({ search, category, sort, min, max });
-  }, [search, category, sort, min, max]);
+    setFilters({ search, category, sort });
+  }, [search, category, sort]);
 
   useEffect(() => {
     setProducts([]);
@@ -62,227 +48,121 @@ export default function Shop() {
   }, [search, category]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const loadProducts = async () => {
       try {
-        if (controllerRef.current) {
-          controllerRef.current.abort();
-        }
-
-        controllerRef.current = new AbortController();
         setLoading(true);
         setError("");
 
-        const params = { page };
-        if (search) params.search = search;
-        if (category && category !== "all") params.category = category;
-        if (sort) params.sort = sort;
-        if (min) params.min = min;
-        if (max) params.max = max;
+        const filterParams = { page };
+        if (search) filterParams.search = search;
+        if (category && category !== "all") filterParams.category = category;
+        if (sort) filterParams.sort = sort;
 
-        const res = await api.get("products/", {
-          params,
-          signal: controllerRef.current.signal,
-        });
-
-        const data = res.data;
+        const data = await getProducts(filterParams);
         const results = Array.isArray(data) ? data : data.results || [];
 
         setProducts(prev => (page === 1 ? results : [...prev, ...results]));
         setHasMore(Boolean(data.next));
       } catch (err) {
-        const isCanceled =
-          err?.name === "AbortError" ||
-          err?.name === "CanceledError" ||
-          err?.code === "ERR_CANCELED";
-        if (!isCanceled) {
-          console.error("Fetch error:", err);
-          setError("Unable to load products right now.");
-        }
+        setError("Unable to load products. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProducts();
-
-    return () => {
-      if (controllerRef.current) {
-        controllerRef.current.abort();
-      }
-    };
-  }, [page, search, category, sort, min, max]);
-
-  const visibleProducts = useMemo(() => {
-    return products;
-  }, [products]);
-
-  const applyFilters = next => {
-    const nextParams = new URLSearchParams();
-    if (next.search) nextParams.set("search", next.search);
-    if (next.category && next.category !== "all") {
-      nextParams.set("category", next.category);
-    }
-    if (next.sort) nextParams.set("sort", next.sort);
-    if (next.min) nextParams.set("min", next.min);
-    if (next.max) nextParams.set("max", next.max);
-
-    const query = nextParams.toString();
-    navigate(query ? `/shop?${query}` : "/shop");
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    applyFilters(filters);
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      search: "",
-      category: "all",
-      sort: "newest",
-      min: "",
-      max: "",
-    });
-    navigate("/shop");
-  };
-
-  const isInitialLoading = loading && products.length === 0;
+    loadProducts();
+  }, [page, search, category, sort]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
-      <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/5 pb-8">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] text-muted mb-4 opacity-70">Shop</p>
-          <h1 className="text-4xl md:text-5xl font-display mb-4">Curated Essentials</h1>
-          <p className="text-muted max-w-xl text-sm leading-relaxed">
-            Refined pieces, thoughtfully composed. Use the filters to craft your personal edit.
+    <div className="min-h-screen bg-bg-primary">
+      {/* Header */}
+      <header className="section-container pt-12 pb-8 md:pt-16 md:pb-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <div>
+            <p className="label mb-2">Collection</p>
+            <h1 className="heading-xl">Shop</h1>
+          </div>
+          <p className="text-sm text-text-muted font-medium">
+            {products.length} {products.length === 1 ? "product" : "products"}
           </p>
-        </div>
-        <div className="text-[10px] uppercase tracking-[0.3em] text-muted font-medium">
-          {visibleProducts.length} items
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-12 items-start">
+      <div className="section-container pb-20 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10 items-start">
         {/* Filters */}
-        <aside className="sticky top-28 bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-black/5 shadow-sm">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-            <p className="text-[10px] uppercase tracking-[0.4em] font-semibold text-ink/40 border-b border-black/5 pb-4">
-              Refine By
-            </p>
-
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-muted mb-3">Search</label>
-              <input
-                type="text"
-                placeholder="Keywords..."
-                className="w-full bg-black/5 border-none px-4 py-3 rounded-xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
-                value={filters.search}
-                onChange={e => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-muted mb-3">Category</label>
-              <select
-                value={filters.category}
-                onChange={e => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full bg-black/5 border-none px-4 py-3 rounded-xl text-sm focus:ring-1 ring-ink/20 outline-none transition appearance-none cursor-pointer"
-              >
-                {CATEGORY_OPTIONS.map(option => (
-                  <option key={option} value={option}>
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-muted mb-3">Price Range</label>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={filters.min}
-                  onChange={e => setFilters(prev => ({ ...prev, min: e.target.value }))}
-                  className="w-full bg-black/5 border-none px-4 py-3 rounded-xl text-sm outline-none"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={filters.max}
-                  onChange={e => setFilters(prev => ({ ...prev, max: e.target.value }))}
-                  className="w-full bg-black/5 border-none px-4 py-3 rounded-xl text-sm outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] uppercase tracking-widest text-muted mb-3">Sort By</label>
-              <select
-                value={filters.sort}
-                onChange={e => setFilters(prev => ({ ...prev, sort: e.target.value }))}
-                className="w-full bg-black/5 border-none px-4 py-3 rounded-xl text-sm outline-none cursor-pointer"
-              >
-                {SORT_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-3 pt-4">
-              <button type="submit" className="btn-elegant w-full text-[10px] py-4">
-                Apply Filters
-              </button>
-              <button type="button" onClick={clearFilters} className="text-[10px] uppercase tracking-widest text-muted hover:text-ink transition py-2">
-                Clear All
-              </button>
-            </div>
-          </form>
-        </aside>
-
-        {/* Products */}
-        <section>
-          {isInitialLoading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-[320px] bg-black/5 rounded-[1.8rem]" />
-                  <div className="h-4 bg-black/5 mt-6 w-1/3 rounded-full" />
-                  <div className="h-6 bg-black/5 mt-3 w-2/3 rounded-full" />
-                </div>
+        <aside className="card-elevated sticky top-[88px] p-6 flex flex-col gap-8">
+          <div>
+            <h3 className="form-label mb-4">Category</h3>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORY_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => navigate(`/shop?category=${opt}&sort=${sort}`)}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                    category === opt
+                      ? "bg-text-primary text-white shadow-sm"
+                      : "bg-bg-subtle text-text-secondary hover:bg-border-strong"
+                  }`}
+                >
+                  {opt === "all" ? "All" : opt}
+                </button>
               ))}
             </div>
-          )}
+          </div>
 
-          {!isInitialLoading && error && (
-            <div className="text-center py-20 bg-white/30 rounded-3xl border border-dashed border-black/10">
-              <p className="text-muted text-sm">{error}</p>
+          <div>
+            <h3 className="form-label mb-3">Sort by</h3>
+            <select
+              value={sort}
+              onChange={e => navigate(`/shop?category=${category}&sort=${e.target.value}`)}
+              className="input !py-2.5 !text-sm cursor-pointer"
+            >
+              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          </div>
+
+          <button
+            onClick={() => navigate("/shop")}
+            className="text-xs font-medium text-text-muted hover:text-text-primary transition-colors flex items-center gap-1.5 mt-2"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0-5v5h5"/></svg>
+            Reset filters
+          </button>
+        </aside>
+
+        {/* Product Grid */}
+        <section>
+          {loading && products.length === 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="card h-[420px] animate-pulse bg-bg-subtle" />
+              ))}
             </div>
-          )}
-
-          {!isInitialLoading && !error && visibleProducts.length === 0 && (
-            <div className="text-center py-20 bg-white/30 rounded-3xl border border-dashed border-black/10">
-              <p className="text-muted text-sm">No products match your criteria.</p>
+          ) : error ? (
+            <div className="card p-16 text-center">
+              <p className="text-text-muted mb-4">{error}</p>
+              <LiquidButton size="default" onClick={() => window.location.reload()} className="!text-text-primary font-medium">Try Again</LiquidButton>
             </div>
-          )}
-
-          {!isInitialLoading && !error && visibleProducts.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {visibleProducts.map(product => (
-                <Link key={product.id} to={`/product/${product.id}`} className="block">
-                  <ProductCard product={product} />
+          ) : products.length === 0 ? (
+            <div className="card p-16 text-center">
+              <p className="text-text-muted mb-4">No products found matching your criteria.</p>
+              <LiquidButton size="default" onClick={() => navigate("/shop")} className="!text-text-primary font-medium">Clear Filters</LiquidButton>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {products.map(p => (
+                <Link key={p.id} to={`/product/${p.id}`}>
+                  <ProductCard product={p} />
                 </Link>
               ))}
             </div>
           )}
 
-          <div ref={loadMoreRef} className="mt-16 text-center">
-            {loading && <p className="text-[10px] uppercase tracking-widest text-muted animate-pulse">Gathering more pieces...</p>}
-            {!hasMore && !loading && visibleProducts.length > 0 && (
-              <p className="text-[10px] uppercase tracking-widest text-muted opacity-40">— End of Collection —</p>
+          <div ref={loadMoreRef} className="mt-16 py-8 flex flex-col items-center justify-center">
+            {loading && products.length > 0 && (
+              <div className="w-6 h-6 border-2 border-text-primary border-t-transparent rounded-full animate-spin" />
+            )}
+            {!hasMore && products.length > 0 && (
+              <p className="text-xs text-text-muted">You've seen everything</p>
             )}
           </div>
         </section>

@@ -1,108 +1,90 @@
-import { useUserStore } from "../store/userStore";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCartStore } from "../store/cartStore";
-import { useWishlistStore } from "../store/wishlistStore";
-import { login } from "../services/authService";
+import api from "../services/api";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 export default function Login() {
-  const { fetchProfile } = useUserStore();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const syncCart = useCartStore(state => state.syncCart);
-  const loadCart = useCartStore(state => state.loadCart);
-
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogin = async e => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
+    setError("");
     try {
-      await login(username, password);
-      await fetchProfile(); // Sync user store after login
-
-      await syncCart();
-      await loadCart();
-
-      const redirectTo = location.state?.from || "/";
-      navigate(redirectTo, { replace: true });
+      const res = await api.post("auth/login/", { username, password });
+      localStorage.setItem("access", res.data.access);
+      localStorage.setItem("username", username);
+      const from = location.state?.from || "/profile";
+      navigate(from);
+      window.location.reload();
     } catch (err) {
-      setError(err.message || "Invalid username or password");
+      setError("Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 flex justify-center">
-      <div className="w-full max-w-lg bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-black/5 p-12 shadow-[var(--shadow-soft)]">
-        <header className="mb-10 text-center">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-muted mb-4 opacity-70">Welcome</p>
-          <h1 className="text-4xl font-display mb-4 text-ink">Sign In</h1>
-          <p className="text-muted text-sm leading-relaxed max-w-[280px] mx-auto">
-            Access your curated collection and refined shopping experience.
-          </p>
-        </header>
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-slideUp">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-block text-2xl font-bold tracking-[-0.04em] mb-6">ELEGANCE</Link>
+          <h1 className="heading-md mb-2">Welcome back</h1>
+          <p className="text-sm text-text-muted">Sign in to your account to continue</p>
+        </div>
 
-        {error && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs text-center">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="flex flex-col gap-6">
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Username</label>
-            <input
-              className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
-              placeholder="Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Password</label>
-            <div className="relative">
+        {/* Form */}
+        <div className="card p-8 md:p-10">
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
+            <div>
+              <label className="form-label">Username</label>
               <input
-                className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition pr-16"
-                placeholder="Password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
+                className="input"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="Enter your username"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(p => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest text-muted hover:text-ink transition px-2 py-1"
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
             </div>
-          </div>
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="form-label !mb-0">Password</label>
+                <Link to="/forgot-password" className="text-xs text-text-muted hover:text-text-primary transition-colors">Forgot password?</Link>
+              </div>
+              <input
+                type="password"
+                className="input"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
-          <button
-            disabled={loading}
-            className="btn-elegant w-full py-5 mt-4 text-[10px] bg-ink text-white hover:bg-ink/90 shadow-lg shadow-black/10 disabled:opacity-50 disabled:scale-100"
-          >
-            {loading ? "Authenticating..." : "Sign In"}
-          </button>
-        </form>
+            {error && (
+              <p className="text-sm text-error text-center bg-error/5 py-2.5 rounded-lg">{error}</p>
+            )}
 
-        <p className="mt-10 text-center text-xs text-muted">
-          New here?{" "}
-          <Link to="/register" className="text-ink font-medium tracking-wide border-b border-ink/30 pb-0.5 hover:border-ink transition ml-1">
-            Create an account
-          </Link>
+            <LiquidButton
+              size="xl"
+              disabled={loading}
+              onClick={handleLogin}
+              className="!text-text-primary font-semibold w-full disabled:opacity-40"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </LiquidButton>
+          </form>
+        </div>
+
+        <p className="text-center mt-8 text-sm text-text-muted">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-text-primary font-medium hover:underline">Create one</Link>
         </p>
       </div>
     </div>

@@ -1,101 +1,94 @@
-import { useUserStore } from "../store/userStore";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCartStore } from "../store/cartStore";
-import { useWishlistStore } from "../store/wishlistStore";
-import { register } from "../services/authService";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 export default function Register() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const submit = async e => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
+    setError("");
     try {
-      await register(username, email, password);
-      navigate("/login", { state: { from: location.state?.from } });
+      await api.post("auth/register/", { username, email, password });
+      navigate("/login");
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20 flex justify-center">
-      <div className="w-full max-w-lg bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-black/5 p-12 shadow-[var(--shadow-soft)]">
-        <header className="mb-10 text-center">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-muted mb-4 opacity-70">Register</p>
-          <h1 className="text-4xl font-display mb-4 text-ink">Join Elegance</h1>
-          <p className="text-muted text-sm leading-relaxed max-w-[280px] mx-auto">
-            Experience refined shopping with a personal touch.
-          </p>
-        </header>
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-slideUp">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-block text-2xl font-bold tracking-[-0.04em] mb-6">ELEGANCE</Link>
+          <h1 className="heading-md mb-2">Create your account</h1>
+          <p className="text-sm text-text-muted">Join ELEGANCE to start shopping</p>
+        </div>
 
-        {error && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs text-center">
-            {error}
-          </div>
-        )}
+        {/* Form */}
+        <div className="card p-8 md:p-10">
+          <form onSubmit={handleRegister} className="flex flex-col gap-5">
+            <div>
+              <label className="form-label">Username</label>
+              <input
+                className="input"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="Choose a username"
+                required
+              />
+            </div>
+            <div>
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="input"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div>
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                className="input"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Create a secure password"
+                required
+              />
+            </div>
 
-        <form onSubmit={submit} className="flex flex-col gap-6">
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Username</label>
-            <input
-              className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
-              placeholder="Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              required
-            />
-          </div>
+            {error && (
+              <p className="text-sm text-error text-center bg-error/5 py-2.5 rounded-lg">{error}</p>
+            )}
 
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Email</label>
-            <input
-              className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-          </div>
+            <LiquidButton
+              size="xl"
+              disabled={loading}
+              onClick={handleRegister}
+              className="!text-text-primary font-semibold w-full disabled:opacity-40"
+            >
+              {loading ? "Creating account..." : "Create Account"}
+            </LiquidButton>
+          </form>
+        </div>
 
-          <div>
-            <label className="block text-[10px] uppercase tracking-widest text-muted mb-3 ml-1">Password</label>
-            <input
-              className="w-full bg-black/5 border-none px-5 py-4 rounded-2xl text-sm focus:ring-1 ring-ink/20 outline-none transition"
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            disabled={loading}
-            className="btn-elegant w-full py-5 mt-4 text-[10px] bg-ink text-white hover:bg-ink/90 shadow-lg shadow-black/10 disabled:opacity-50 disabled:scale-100"
-          >
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
-
-        <p className="mt-10 text-center text-xs text-muted">
+        <p className="text-center mt-8 text-sm text-text-muted">
           Already have an account?{" "}
-          <Link to="/login" className="text-ink font-medium tracking-wide border-b border-ink/30 pb-0.5 hover:border-ink transition ml-1">
-            Sign in here
-          </Link>
+          <Link to="/login" className="text-text-primary font-medium hover:underline">Sign in</Link>
         </p>
       </div>
     </div>
